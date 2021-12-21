@@ -25,6 +25,13 @@ spec:
         io.kompose.network/shuffle: "true"
         io.kompose.service: opensearch
     spec:
+      initContainers:
+        - name: set-permissions
+          image: registry.hub.docker.com/library/busybox:latest
+          command: ['sh', '-c', 'mkdir -p /usr/share/opensearch/data && chown 1000:1000 /usr/share/opensearch/data' ]
+          volumeMounts:
+            - mountPath: /usr/share/opensearch/data
+              name: opensearch-volume
       containers:
         - env:
             - name: OPENSEARCH_JAVA_OPTS
