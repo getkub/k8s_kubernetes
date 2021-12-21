@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: ./kompose -f converted_compose.yml convert
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: orborus
+  name: orborus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: orborus
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: ./kompose -f converted_compose.yml convert
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/shuffle: "true"
+        io.kompose.service: orborus
+    spec:
+      containers:
+        - env:
+            - name: BASE_URL
+              value: http://shuffle-backend:5001
+            - name: CLEANUP
+              value: "false"
+            - name: DOCKER_API_VERSION
+              value: "1.40"
+            - name: ENVIRONMENT_NAME
+              value: Shuffle
+            - name: HTTPS_PROXY
+            - name: HTTP_PROXY
+            - name: ORG_ID
+              value: Shuffle
+            - name: SHUFFLE_APP_SDK_VERSION
+              value: latest
+            - name: SHUFFLE_BASE_IMAGE_NAME
+              value: frikky
+            - name: SHUFFLE_BASE_IMAGE_REGISTRY
+              value: ghcr.io
+            - name: SHUFFLE_BASE_IMAGE_TAG_SUFFIX
+              value: -0.8.80
+            - name: SHUFFLE_ORBORUS_EXECUTION_CONCURRENCY
+              value: "5"
+            - name: SHUFFLE_ORBORUS_EXECUTION_TIMEOUT
+              value: "600"
+            - name: SHUFFLE_PASS_APP_PROXY
+              value: "FALSE"
+            - name: SHUFFLE_PASS_WORKER_PROXY
+              value: "TRUE"
+            - name: SHUFFLE_WORKER_VERSION
+              value: latest
+            - name: RUNNING_MODE
+              value: kubernetes            
+          image: ghcr.io/frikky/shuffle-orborus:latest
+          name: shuffle-orborus
+          resources: {}
+          volumeMounts:
+            - mountPath: /var/run/docker.sock
+              name: orborus-claim0
+      hostname: shuffle-orborus
+      restartPolicy: Always
+      volumes:
+        - name: orborus-claim0
+          persistentVolumeClaim:
+            claimName: orborus-claim0
+status: {}

@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: ./kompose -f converted_compose.yml convert
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: opensearch
+  name: opensearch
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: opensearch
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: ./kompose -f converted_compose.yml convert
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/shuffle: "true"
+        io.kompose.service: opensearch
+    spec:
+      containers:
+        - env:
+            - name: OPENSEARCH_JAVA_OPTS
+              value: -Xms1024m -Xmx1024m
+            - name: bootstrap.memory_lock
+              value: "false"
+            - name: cluster.initial_master_nodes
+              value: shuffle-opensearch
+            - name: cluster.name
+              value: shuffle-cluster
+            - name: cluster.routing.allocation.disk.threshold_enabled
+              value: "false"
+            - name: discovery.seed_hosts
+              value: shuffle-opensearch
+            - name: node.name
+              value: shuffle-opensearch
+            - name: node.store.allow_mmap
+              value: "false"
+            - name: plugins.security.disabled
+              value: "true"
+          image: opensearchproject/opensearch:1.2.1
+          name: shuffle-opensearch
+          ports:
+            - containerPort: 9200
+          resources: {}
+          volumeMounts:
+            - mountPath: /usr/share/opensearch/data
+              name: opensearch-claim0
+      hostname: shuffle-opensearch
+      restartPolicy: Always
+      volumes:
+        - name: opensearch-claim0
+          persistentVolumeClaim:
+            claimName: opensearch-claim0
+status: {}
