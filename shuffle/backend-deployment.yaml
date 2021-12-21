@@ -92,7 +92,7 @@ spec:
             - name: SHUFFLE_OPENSEARCH_SKIPSSL_VERIFY
               value: "true"
             - name: SHUFFLE_OPENSEARCH_URL
-              value: http://shuffle-opensearch:9200
+              value: http://opensearch.shuffle:9200
             - name: SHUFFLE_OPENSEARCH_USERNAME
             - name: SHUFFLE_PASS_APP_PROXY
               value: "FALSE"
@@ -107,7 +107,7 @@ spec:
           resources: {}
           volumeMounts:
             - mountPath: /var/run/docker.sock
-              name: backend-claim0
+              name: dockersock
             - mountPath: /shuffle-apps
               name: backend-claim1
             - mountPath: /shuffle-files
@@ -115,13 +115,13 @@ spec:
       hostname: shuffle-backend
       restartPolicy: Always
       volumes:
-        - name: backend-claim0
-          persistentVolumeClaim:
-            claimName: backend-claim0
-        - name: backend-claim1
-          persistentVolumeClaim:
-            claimName: backend-claim1
-        - name: backend-claim2
-          persistentVolumeClaim:
-            claimName: backend-claim2
+        - name: dockersock
+          hostPath:
+            path: /var/run/docker.sock
+        - name: shuffle-apps
+          hostPath:
+            path: /shuffle-apps
+        - name: shuffle-files
+          hostPath:
+            path: /shuffle-files
 status: {}

@@ -29,7 +29,7 @@ spec:
       containers:
         - env:
             - name: BASE_URL
-              value: http://shuffle-backend:5001
+              value: http://backend.shuffle:5001
             - name: CLEANUP
               value: "false"
             - name: DOCKER_API_VERSION
@@ -65,11 +65,11 @@ spec:
           resources: {}
           volumeMounts:
             - mountPath: /var/run/docker.sock
-              name: orborus-claim0
+              name: dockersock
       hostname: shuffle-orborus
       restartPolicy: Always
       volumes:
-        - name: orborus-claim0
-          persistentVolumeClaim:
-            claimName: orborus-claim0
+        - name: dockersock
+          hostPath:
+            path: /var/run/docker.sock
 status: {}
