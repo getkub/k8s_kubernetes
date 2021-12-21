@@ -32,7 +32,7 @@ spec:
           command: ['sh', '-c', 'mkdir -p /usr/share/opensearch/data && chown 1000:1000 /usr/share/opensearch/data' ]
           volumeMounts:
             - mountPath: /usr/share/opensearch/data
-              name: opensearch-volume
+              name: opensearch-claim0
       containers:
         - env:
             - name: OPENSEARCH_JAVA_OPTS
