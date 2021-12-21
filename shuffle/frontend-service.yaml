@@ -19,5 +19,6 @@ spec:
       targetPort: 443
   selector:
     io.kompose.service: frontend
+  type: LoadBalancer
 status:
   loadBalancer: {}
