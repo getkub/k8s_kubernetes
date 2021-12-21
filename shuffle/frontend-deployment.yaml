@@ -28,7 +28,7 @@ spec:
       containers:
         - env:
             - name: BACKEND_HOSTNAME
-              value: shuffle-backend
+              value: backend.shuffle
           image: ghcr.io/frikky/shuffle-frontend:latest
           name: shuffle-frontend
           ports:
