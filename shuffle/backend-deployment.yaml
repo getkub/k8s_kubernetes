@@ -109,8 +109,8 @@ spec:
             - mountPath: /var/run/docker.sock
               name: dockersock
             - mountPath: /shuffle-apps
-              name: shuffle-apps
-            - mountPath: /shuffle-files-vol
+              name: shuffle-apps-vol
+            - mountPath: /shuffle-files
               name: shuffle-files-vol
       hostname: shuffle-backend
       restartPolicy: Always
