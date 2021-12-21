@@ -1,6 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: shuffle
   annotations:
     kompose.cmd: ./kompose -f converted_compose.yml convert
     kompose.version: 1.26.0 (40646f47)
