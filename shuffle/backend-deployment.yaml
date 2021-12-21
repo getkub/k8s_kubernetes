@@ -109,19 +109,19 @@ spec:
             - mountPath: /var/run/docker.sock
               name: dockersock
             - mountPath: /shuffle-apps
-              name: backend-claim1
-            - mountPath: /shuffle-files
-              name: backend-claim2
+              name: shuffle-apps
+            - mountPath: /shuffle-files-vol
+              name: shuffle-files-vol
       hostname: shuffle-backend
       restartPolicy: Always
       volumes:
         - name: dockersock
           hostPath:
             path: /var/run/docker.sock
-        - name: shuffle-apps
+        - name: shuffle-apps-vol
           hostPath:
             path: /shuffle-apps
-        - name: shuffle-files
+        - name: shuffle-files-vol
           hostPath:
             path: /shuffle-files
 status: {}
