@@ -1,0 +1,49 @@
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: k8s-db-role1
+  labels:
+    k8s-app: k8s-db
+rules:
+  - verbs:
+      - get
+      - update
+      - delete
+    apiGroups:
+      - ''
+    resources:
+      - secrets
+    resourceNames:
+      - kubernetes-dashboard-key-holder
+      - kubernetes-dashboard-certs
+      - kubernetes-dashboard-csrf
+  - verbs:
+      - get
+      - update
+    apiGroups:
+      - ''
+    resources:
+      - configmaps
+    resourceNames:
+      - kubernetes-dashboard-settings
+  - verbs:
+      - proxy
+    apiGroups:
+      - ''
+    resources:
+      - services
+    resourceNames:
+      - heapster
+      - dashboard-metrics-scraper
+  - verbs:
+      - get
+    apiGroups:
+      - ''
+    resources:
+      - services/proxy
+    resourceNames:
+      - heapster
+      - 'http:heapster:'
+      - 'https:heapster:'
+      - dashboard-metrics-scraper
+      - http:dashboard-metrics-scraper

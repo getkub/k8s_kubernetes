@@ -1,0 +1,8 @@
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: k8s-db-sa1
+  labels:
+    k8s-app: k8s-db
+secrets:
+  - name: k8s-db-secret1
