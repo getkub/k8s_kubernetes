@@ -78,6 +78,16 @@ minikube tunnel
 # then you should be access the svc using ClusterIP & port
 ```
 
+### Tunnel from remote laptop
+```
+localport=3001
+remoteport=3001
+remoteIP="10.110.216.39"
+remoteHost="myServer"
+remoteHostUser="root"
+ssh -L ${localport}:${remoteIP}:${remotePort} ${remoteHostUser}:${remoteHost}
+```
+
 
 ### Create kubeconfig for Dashboard
 - See k8s_dashboard_kubeconfig.md
