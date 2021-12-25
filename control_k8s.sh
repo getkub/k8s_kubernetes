@@ -30,7 +30,7 @@ case $action in
       list=`cat ${order_file}| grep -v '#' `
       ;;
    delete)
-      list=`cat ${order_file}| grep -v '#'| sort -r  `
+      list=`cat ${order_file}| grep -v '#'| rev `
       ;;
    *)
      echo "Unable to identify action. Accepts only apply or delete"
