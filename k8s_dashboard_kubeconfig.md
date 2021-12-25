@@ -8,7 +8,8 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.4.0/a
 
 ### Start with localLan and how the address needs exposing
 # kubectl proxy --accept-hosts='^localhost$,^192\.168\.+\..+$' --address="${k8s_host}" &
-kubectl proxy &   # This is just enough if you are port fowarding
+# kubectl proxy &   # This is just enough if you are port fowarding
+kubectl proxy --address='0.0.0.0' --port=8001 --accept-hosts='.*' &
 ```
 
 ### Ensure you have an admin account in the dashboard
