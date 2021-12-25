@@ -71,6 +71,15 @@ kubectl -n $ns get service
 
 ```
 
+### Make a tunnel to work with ClusterIP (and or LoadBalancer)
+```
+# Another shell run below
+minikube tunnel
+# then you should be access the svc using ClusterIP & port
+```
+
+
 ### Create kubeconfig for Dashboard
 - See k8s_dashboard_kubeconfig.md
-- 
+
+
