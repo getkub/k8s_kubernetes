@@ -42,7 +42,7 @@ for dir in `echo $list`
 do
     for f in `ls -1 ${module}/${dir}/*.yaml`
     do
-        echo "Executing => kubectl -n $module $action -f ${dir}/${f}"
-        kubectl -n $module $action -f ${dir}/${f} 
+        echo "Executing => kubectl -n $module $action -f $f"
+        kubectl -n $module $action -f $f
     done
 done
