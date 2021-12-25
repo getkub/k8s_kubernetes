@@ -38,6 +38,10 @@ case $action in
      ;;
 esac
 
+if [ $action == "apply" ] ; then
+    kubectl create ns ${module}
+fi
+
 for dir in `echo $list`
 do
     for f in `ls -1 ${module}/${dir}/*.yaml`
@@ -46,3 +50,7 @@ do
         kubectl -n $module $action -f $f
     done
 done
+
+if [ $action == "delete" ] ; then
+    kubectl delete ns ${module}
+fi
