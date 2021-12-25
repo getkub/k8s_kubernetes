@@ -48,6 +48,7 @@ do
     do
         echo "Executing => kubectl -n $module $action -f $f"
         kubectl -n $module $action -f $f
+        echo "-----------------------------------------------"
     done
 done
 
