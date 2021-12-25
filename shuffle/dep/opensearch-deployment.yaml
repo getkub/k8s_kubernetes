@@ -42,7 +42,7 @@ spec:
           - name: OPENSEARCH_JAVA_OPTS
             value: -Xms1024m -Xmx1024m
           - name: bootstrap.memory_lock
-            value: "false"
+            value: "true"
           - name: cluster.initial_master_nodes
             value: shuffle-opensearch
           - name: cluster.name
