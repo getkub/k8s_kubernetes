@@ -43,6 +43,7 @@ spec:
   tls:
   - hosts:
     - svc1.local.dev
+    - svc2.local.dev
     secretName: tls-secret
   rules:
   - host: svc1.local.dev
