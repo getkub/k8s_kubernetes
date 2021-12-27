@@ -19,5 +19,6 @@ ingress-nginx-controller-admission   ClusterIP      10.100.214.225   <none>     
 - The LoadBalancer IP will be used to display services inside
 
 ```
-curl -v http://10.109.212.57/svc1 -H 'Host: local.dev'
+curl -v http://10.109.212.57/svc1 -H 'Host: svc1.local.dev'
+curl -v http://10.109.212.57/svc2 -H 'Host: svc2.local.dev'
 ```
