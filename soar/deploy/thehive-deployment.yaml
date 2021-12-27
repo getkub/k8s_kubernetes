@@ -35,7 +35,8 @@ spec:
             - containerPort: 9000
           resources: {}
           volumeMounts:
-            - mountPath: /etc/thehive
+            - mountPath: /etc/thehive/application.conf
+              subPath: application.conf
               name: thehive-application-conf
             - mountPath: /opt/thp/thehive/db
               name: thehive-claim1

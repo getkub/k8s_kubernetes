@@ -38,7 +38,8 @@ spec:
             - containerPort: 9001
           resources: {}
           volumeMounts:
-            - mountPath: /etc/cortex
+            - mountPath: /etc/cortex/application.conf
+              subPath: application.conf
               name: cortex-application-conf
             - mountPath: /opt/cortex/jobs
               name: cortex-claim1
