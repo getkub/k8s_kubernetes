@@ -45,14 +45,24 @@ spec:
   #   - registry.<your domain>
   #   secretName: registry-tls
   rules:
-  - host: local.dev
+  - host: svc1.local.dev
     http:
       paths:
-      - path: /
+      - path: /svc1
         pathType: Prefix
         backend:
           service:
             name: http-svc1
+            port:
+              number: 80
+  - host: svc2.local.dev
+    http:
+      paths:
+      - path: /svc2
+        pathType: Prefix
+        backend:
+          service:
+            name: http-svc2
             port:
               number: 80
 ---
