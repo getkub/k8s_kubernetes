@@ -6,3 +6,4 @@ https://medium.com/@harsh.manvar111/kubernetes-nginx-ingress-and-cert-manager-ss
 
 
 https://kubernetes.github.io/ingress-nginx/examples/tls-termination/
+https://kubernetes.github.io/ingress-nginx/examples/PREREQUISITES/

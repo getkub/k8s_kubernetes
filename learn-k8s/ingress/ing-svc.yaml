@@ -52,7 +52,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: service1
+            name: http-svc1
             port:
               number: 80
 ---
