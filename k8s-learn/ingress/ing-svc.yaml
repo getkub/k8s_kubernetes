@@ -40,25 +40,25 @@ metadata:
   name: example-ingress
 spec:
   ingressClassName: nginx
-  # tls:
-  # - hosts:
-  #   - registry.<your domain>
-  #   secretName: registry-tls
+  tls:
+  - hosts:
+    - svc1.local.dev
+    secretName: tls-secret
   rules:
-  - host: local.dev
+  - host: svc1.local.dev
     http:
       paths:
-      - path: /svc1
+      - path: /
         pathType: Prefix
         backend:
           service:
             name: http-svc1
             port:
               number: 80
-  - host: local.dev
+  - host: svc2.local.dev
     http:
       paths:
-      - path: /svc2
+      - path: /
         pathType: Prefix
         backend:
           service:
