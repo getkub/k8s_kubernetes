@@ -6,33 +6,33 @@ metadata:
     app: cortex
 data:
   application.conf: |
-play.http.secret.key="CortexTestPassword"
+    play.http.secret.key="CortexTestPassword"
 
-## ElasticSearch
-search {
-  index = cortex
-  uri = "http://elasticsearch:9200"
-}
+    ## ElasticSearch
+    search {
+      index = cortex
+      uri = "http://elasticsearch:9200"
+    }
 
-## Cache
-cache.job = 10 minutes
+    ## Cache
+    cache.job = 10 minutes
 
-job {
-  runner = [docker, process]
-}
+    job {
+      runner = [docker, process]
+    }
 
-## ANALYZERS
-analyzer {
-  urls = [
-    "https://download.thehive-project.org/analyzers.json"
-    #"/absolute/path/of/analyzers"
-  ]
-}
+    ## ANALYZERS
+    analyzer {
+      urls = [
+        "https://download.thehive-project.org/analyzers.json"
+        #"/absolute/path/of/analyzers"
+      ]
+    }
 
-# RESPONDERS
-responder {
-  urls = [
-    "https://download.thehive-project.org/responders.json"
-    #"/absolute/path/of/responders"
-  ]
-}
+    # RESPONDERS
+    responder {
+      urls = [
+        "https://download.thehive-project.org/responders.json"
+        #"/absolute/path/of/responders"
+      ]
+    }
