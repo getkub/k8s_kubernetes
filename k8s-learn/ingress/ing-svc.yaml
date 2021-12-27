@@ -55,7 +55,7 @@ spec:
           service:
             name: http-svc1
             port:
-              number: 80
+              number: 8000
   - host: svc2.local.dev
     http:
       paths:
@@ -65,5 +65,5 @@ spec:
           service:
             name: http-svc2
             port:
-              number: 80
+              number: 8000
 ---
