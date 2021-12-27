@@ -45,7 +45,7 @@ spec:
   #   - registry.<your domain>
   #   secretName: registry-tls
   rules:
-  - host: local.dev
+  - host: svc1.local.dev
     http:
       paths:
       - path: /
