@@ -6,6 +6,7 @@ ns="k8s-learn"
 cert_name="tls-secret"
 
 # TLS certificates
+kubectl create ns ${ns}
 openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout ${certDir}/tls.key -out ${certDir}/tls.crt -subj "/CN=nginxsvc/O=nginxsvc"
 kubectl -n $ns create secret tls ${cert_name} --key ${certDir}/tls.key --cert ${certDir}/tls.crt
 
