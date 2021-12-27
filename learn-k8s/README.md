@@ -7,3 +7,17 @@ https://medium.com/@harsh.manvar111/kubernetes-nginx-ingress-and-cert-manager-ss
 
 https://kubernetes.github.io/ingress-nginx/examples/tls-termination/
 https://kubernetes.github.io/ingress-nginx/examples/PREREQUISITES/
+
+
+
+```
+kubectl get svc -n ingress-nginx
+NAME                                 TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE
+ingress-nginx-controller             LoadBalancer   10.109.212.57    <pending>     80:30427/TCP,443:30253/TCP   56m
+ingress-nginx-controller-admission   ClusterIP      10.100.214.225   <none>        443/TCP                      56m
+```
+- The LoadBalancer IP will be used to display services inside
+
+```
+curl -v http://10.109.212.57/svc1 -H 'Host: local.dev'
+```
