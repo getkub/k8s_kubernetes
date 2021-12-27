@@ -54,5 +54,5 @@ spec:
           service:
             name: service1
             port:
-              number: 8000
+              number: 80
 ---
