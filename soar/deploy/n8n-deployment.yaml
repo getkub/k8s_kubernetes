@@ -36,6 +36,10 @@ spec:
               value: thehive
             - name: N8N_BASIC_AUTH_USER
               value: thehive
+            - name: N8N_PROTOCOL
+              value: "http"
+            - name: N8N_PORT
+              value: "5678"
           image: n8nio/n8n
           name: n8n
           ports:
