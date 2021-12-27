@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose -f docker-compose-resolved.yaml convert
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: cortex
+  name: cortex
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: cortex
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose -f docker-compose-resolved.yaml convert
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/hp_network: "true"
+        io.kompose.service: cortex
+    spec:
+      containers:
+        - args:
+            - --job-directory
+            - /opt/cortex/jobs
+          env:
+            - name: JOB_DIRECTORY
+              value: /opt/cortex/jobs
+          image: thehiveproject/cortex:latest
+          name: cortex
+          ports:
+            - containerPort: 9001
+          resources: {}
+          volumeMounts:
+            - mountPath: /etc/cortex
+              name: thehive-application-conf
+            - mountPath: /opt/cortex/jobs
+              name: cortex-claim1
+            - mountPath: /var/run/docker.sock
+              name: dockersock
+      restartPolicy: Always
+      volumes:
+        - name: cortex-application-conf
+          configMap:
+            name: cortex-cm
+        - name: cortex-claim1
+          persistentVolumeClaim:
+            claimName: cortex-claim1
+        - name: dockersock
+          hostPath:
+            path: /var/run/docker.sock
+status: {}
