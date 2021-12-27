@@ -39,7 +39,7 @@ spec:
           resources: {}
           volumeMounts:
             - mountPath: /etc/cortex
-              name: thehive-application-conf
+              name: cortex-application-conf
             - mountPath: /opt/cortex/jobs
               name: cortex-claim1
             - mountPath: /var/run/docker.sock
