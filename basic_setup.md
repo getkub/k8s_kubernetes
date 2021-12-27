@@ -88,8 +88,24 @@ remoteHostUser="root"
 ssh -L ${localport}:${remoteIP}:${remotePort} ${remoteHostUser}:${remoteHost}
 ```
 
+```
+# Port Forward
+ns=myns
+object="service/ingress-nginx-controller"
+outsidePort=8000
+internalPort=443
+kubectl -n $ns port-forward ${object} ${outsidePort}:${internalPort} --address='0.0.0.0'
+```
+
 
 ### Create kubeconfig for Dashboard
 - See k8s_dashboard_kubeconfig.md
 
 
+### MetaLB for remote access
+https://metallb.universe.tf/installation/
+
+```
+kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.11.0/manifests/namespace.yaml
+kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.11.0/manifests/metallb.yaml
+```
