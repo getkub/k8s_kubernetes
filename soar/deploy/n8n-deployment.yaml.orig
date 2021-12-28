@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: n8n
+  name: n8n
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: n8n
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        io.kompose.service: n8n
+    spec:
+      containers:
+        - args:
+            - n8n
+            - start
+          env:
+            - name: N8N_BASIC_AUTH_ACTIVE
+              value: "true"
+            - name: N8N_BASIC_AUTH_PASSWORD
+              value: thehive
+            - name: N8N_BASIC_AUTH_USER
+              value: thehive
+            - name: N8N_PROTOCOL
+              value: "http"
+            - name: N8N_PORT
+              value: "5678"
+          image: n8nio/n8n
+          name: n8n
+          ports:
+            - containerPort: 5678
+          resources: {}
+          volumeMounts:
+            - mountPath: /root/.n8n
+              name: n8n-claim0
+            - mountPath: /opt/workflows
+              name: n8n-claim1
+      restartPolicy: Always
+      volumes:
+        - name: n8n-claim0
+          persistentVolumeClaim:
+            claimName: n8n-claim0
+        - name: n8n-claim1
+          persistentVolumeClaim:
+            claimName: n8n-claim1
+status: {}
