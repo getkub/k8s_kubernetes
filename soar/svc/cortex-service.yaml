@@ -10,7 +10,7 @@ metadata:
   name: cortex
 spec:
   ports:
-    - name: cortex-svc
+    - name: cortex-svc-9001
       port: 9001
       targetPort: 9001
   selector:
