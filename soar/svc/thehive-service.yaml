@@ -10,7 +10,7 @@ metadata:
   name: thehive
 spec:
   ports:
-    - name: cortex-svc
+    - name: thehive-svc
       port: 9000
       targetPort: 9000
   selector:
