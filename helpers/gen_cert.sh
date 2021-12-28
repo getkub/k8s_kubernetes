@@ -7,7 +7,7 @@ cert_name="tls-secret"
 
 # TLS certificates
 kubectl create ns ${ns}
-openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout ${certDir}/tls.key -out ${certDir}/tls.crt -subj "/CN=nginxsvc/O=nginxsvc"
+openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout ${certDir}/tls.key -out ${certDir}/tls.crt -subj "/CN=svc1.local.dev/CN=svc2.local.dev/CN=local.dev/O=dev"
 kubectl -n $ns create secret tls ${cert_name} --key ${certDir}/tls.key --cert ${certDir}/tls.crt
 
 # # Generate the CA Key and Certificate:

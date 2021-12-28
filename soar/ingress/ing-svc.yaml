@@ -21,9 +21,16 @@ metadata:
     kubernetes.io/tls-acme: 'true'
   name: soar-ingress
 spec:
+  tls:
+    - hosts:
+      - svc1.local.dev
+      - n8n.local.dev
+      # This assumes tls-secret exists and the SSL
+      # certificate contains a CN for svc1.local.dev
+      secretName: tls-secret
   ingressClassName: nginx
   rules:
-  - host: local.dev
+  - host: svc1.local.dev
     http:
       paths:
       - path: /n8n
