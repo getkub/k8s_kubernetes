@@ -2,3 +2,4 @@ cm
 pvc
 deploy
 svc
+ingress
