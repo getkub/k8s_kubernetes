@@ -6,7 +6,7 @@ metadata:
   name: n8n
 spec:
   ports:
-    - name: "5678"
+    - name: n8n-svc
       port: 5678
       targetPort: 5678
   selector:

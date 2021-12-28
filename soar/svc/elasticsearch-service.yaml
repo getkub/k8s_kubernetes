@@ -10,7 +10,7 @@ metadata:
   name: elasticsearch
 spec:
   ports:
-    - name: "9200"
+    - name: elasticsearch-svc
       port: 9200
       targetPort: 9200
   selector:
