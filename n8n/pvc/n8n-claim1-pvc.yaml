@@ -3,12 +3,12 @@ kind: PersistentVolumeClaim
 metadata:
   creationTimestamp: null
   labels:
-    io.kompose.service: n8n-claim0
-  name: n8n-claim0
+    io.kompose.service: n8n-claim1
+  name: n8n-claim1
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 300Mi
+      storage: 500Mi
 status: {}

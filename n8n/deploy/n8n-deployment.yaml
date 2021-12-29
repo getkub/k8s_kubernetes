@@ -48,6 +48,8 @@ spec:
           volumeMounts:
             - mountPath: /root/.n8n
               name: n8n-claim0
+            - mountPath: /opt/workflows
+              name: n8n-claim1
             - mountPath: /root/tls.crt
               subPath: tls.crt
               name: n8n-tls-crt-vol
@@ -59,6 +61,9 @@ spec:
         - name: n8n-claim0
           persistentVolumeClaim:
             claimName: n8n-claim0
+        - name: n8n-claim1
+          persistentVolumeClaim:
+            claimName: n8n-claim1
         - name: n8n-tls-crt-vol
           configMap:
             name: n8n-tls-crt-cm
