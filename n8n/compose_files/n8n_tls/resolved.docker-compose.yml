@@ -5,15 +5,15 @@ services:
       N8N_BASIC_AUTH_ACTIVE: "true"
       N8N_BASIC_AUTH_PASSWORD: password
       N8N_BASIC_AUTH_USER: user
-      N8N_HOST: n8n.mydev.lan
+      N8N_HOST: n8n.mydev.test
       N8N_PORT: '5678'
       N8N_PROTOCOL: https
       NODE_ENV: production
-      WEBHOOK_URL: https://n8n.mydev.lan/
+      WEBHOOK_URL: https://n8n.mydev.test/
     image: n8nio/n8n
     labels:
       traefik.enable: "true"
-      traefik.http.middlewares.n8n.headers.SSLHost: mydev.lan
+      traefik.http.middlewares.n8n.headers.SSLHost: mydev.test
       traefik.http.middlewares.n8n.headers.SSLRedirect: "true"
       traefik.http.middlewares.n8n.headers.STSIncludeSubdomains: "true"
       traefik.http.middlewares.n8n.headers.STSPreload: "true"
@@ -22,7 +22,7 @@ services:
       traefik.http.middlewares.n8n.headers.contentTypeNosniff: "true"
       traefik.http.middlewares.n8n.headers.forceSTSHeader: "true"
       traefik.http.routers.n8n.entrypoints: web,websecure
-      traefik.http.routers.n8n.rule: Host(`n8n.mydev.lan`)
+      traefik.http.routers.n8n.rule: Host(`n8n.mydev.test`)
       traefik.http.routers.n8n.tls: "true"
       traefik.http.routers.n8n.tls.certresolver: mytlschallenge
     ports:
@@ -41,7 +41,7 @@ services:
     - --entrypoints.web.http.redirections.entrypoint.scheme=https
     - --entrypoints.websecure.address=:443
     - --certificatesresolvers.mytlschallenge.acme.tlschallenge=true
-    - --certificatesresolvers.mytlschallenge.acme.email=n8n@mydev.lan
+    - --certificatesresolvers.mytlschallenge.acme.email=n8n@mydev.test
     - --certificatesresolvers.mytlschallenge.acme.storage=/letsencrypt/acme.json
     image: traefik
     ports:
