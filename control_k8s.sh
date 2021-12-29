@@ -47,7 +47,7 @@ fi
 
 if [ $action == "merge" ] ; then
     fname="/tmp/${module}.all_in_one.yaml"
-    if [ ! -f "$fname" ] ; then
+    if [ -f "$fname" ] ; then
         echo "Deleting Existing merge file at: $fname"
         rm -f $fname
     fi
