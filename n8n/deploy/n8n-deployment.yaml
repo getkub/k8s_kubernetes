@@ -1,21 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    traefik.enable: "true"
-    traefik.http.middlewares.n8n.headers.SSLHost: mydev.test
-    traefik.http.middlewares.n8n.headers.SSLRedirect: "true"
-    traefik.http.middlewares.n8n.headers.STSIncludeSubdomains: "true"
-    traefik.http.middlewares.n8n.headers.STSPreload: "true"
-    traefik.http.middlewares.n8n.headers.STSSeconds: "315360000"
-    traefik.http.middlewares.n8n.headers.browserXSSFilter: "true"
-    traefik.http.middlewares.n8n.headers.contentTypeNosniff: "true"
-    traefik.http.middlewares.n8n.headers.forceSTSHeader: "true"
-    traefik.http.routers.n8n.entrypoints: web,websecure
-    traefik.http.routers.n8n.rule: Host(`n8n.mydev.test`)
-    traefik.http.routers.n8n.tls: "true"
-    traefik.http.routers.n8n.tls.certresolver: mytlschallenge
-  creationTimestamp: null
   labels:
     io.kompose.service: n8n
   name: n8n
@@ -64,8 +49,10 @@ spec:
             - mountPath: /root/.n8n
               name: n8n-claim0
             - mountPath: /root/tls.crt
+              subPath: tls.crt
               name: n8n-tls-crt-vol
             - mountPath: /root/tls.key
+              subPath: tls.key
               name: n8n-tls-key-vol
       restartPolicy: Always
       volumes:
