@@ -11,5 +11,5 @@ spec:
       targetPort: 5678
   selector:
     io.kompose.service: n8n
-status:
-  loadBalancer: {}
+  type: LoadBalancer
+
