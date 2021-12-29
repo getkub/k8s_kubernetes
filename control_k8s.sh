@@ -71,4 +71,6 @@ done
 
 if [ $action == "delete" ] ; then
     kubectl delete ns ${module}
+elif [ $action == "merge" ] ; then
+    echo "Output file: ${fname} "
 fi
