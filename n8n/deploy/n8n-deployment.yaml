@@ -28,20 +28,6 @@ spec:
     type: Recreate
   template:
     metadata:
-      annotations:
-        traefik.enable: "true"
-        traefik.http.middlewares.n8n.headers.SSLHost: mydev.test
-        traefik.http.middlewares.n8n.headers.SSLRedirect: "true"
-        traefik.http.middlewares.n8n.headers.STSIncludeSubdomains: "true"
-        traefik.http.middlewares.n8n.headers.STSPreload: "true"
-        traefik.http.middlewares.n8n.headers.STSSeconds: "315360000"
-        traefik.http.middlewares.n8n.headers.browserXSSFilter: "true"
-        traefik.http.middlewares.n8n.headers.contentTypeNosniff: "true"
-        traefik.http.middlewares.n8n.headers.forceSTSHeader: "true"
-        traefik.http.routers.n8n.entrypoints: web,websecure
-        traefik.http.routers.n8n.rule: Host(`n8n.mydev.test`)
-        traefik.http.routers.n8n.tls: "true"
-        traefik.http.routers.n8n.tls.certresolver: mytlschallenge
       labels:
         io.kompose.service: n8n
     spec:
@@ -61,6 +47,10 @@ spec:
               value: "5678"
             - name: N8N_PROTOCOL
               value: https
+            - name: N8N_SSL_KEY
+              value: /root/tls.key
+            - name: N8N_SSL_CERT
+              value: /root/tls.crt
             - name: NODE_ENV
               value: production
             - name: WEBHOOK_URL
@@ -71,8 +61,12 @@ spec:
             - containerPort: 5678
           resources: {}
           volumeMounts:
-            - mountPath: /home/node/.n8n
+            - mountPath: /root/.n8n
               name: n8n-claim0
+            - mountPath: /root/tls.crt
+              name: n8n-tls-crt-cm
+            - mountPath: /root/tls.key
+              name: n8n-tls-key-cm
       restartPolicy: Always
       volumes:
         - name: n8n-claim0

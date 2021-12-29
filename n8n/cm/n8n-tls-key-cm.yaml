@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: n8n-tls-key-cm
+  labels:
+    io.kompose.service: n8n
+    app: n8n
+data:
+  tls.key: |
+    -----BEGIN PRIVATE KEY-----
+    MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDNrJX/S+zW1Jik
+    oWoVtnczfnIK58lkEG20PfFMg0z7PvZ1TNftR3eSKazEXvQbTFyaz4z7zTV+essr
+    x0KMT/13c2iMo9QfnigY0jEvnpNtUXeKKVSYpqB9kwj/182J+t1Fv/1nsTk13Dnw
+    C6pmHpV4nB98jWtaCrhK/cZi7I6yy5tXKCi4PZMPKzixVQdWtu2FRPm3vpILuE5o
+    XQd5JmuihVEf6y5AGa1tDp89KoRgCBlxFLTje3V7KjwO1QI2MbnqWuSZW4kuctSR
+    1JCcACAk+1aGZp3nAxxsLSG6I9V41wwRqJe1ehtLRAOl3qCWeKFAMwkWb3rO26sp
+    1Mj3fQx/AgMBAAECggEBAKAeZWQsasTRG8jHNTyUIfa/0O72hk3VkGKK+qkTa0IK
+    QXsOiOfcBJWQxkTWm3oJF+sZ++soViYSWMvLQ97Sg0SUX2dmP8UhrpusP8iPzryD
+    eOnhxU9WIYnBh3cOPaDW4Z7kmdY5HY311lEv88eutbUA7m5b9qBRyinvqZvoCCve
+    eq99hEYV/PMwlx4yWEGkkWVhek/0O1ryyWizXjxiDvtqRUEV44OL+SXNc29CvIc2
+    KZh8FE3/t2QETJCPhEHexRtVYQCj+Aw7ddO35SZNOZhMcJ+5JfzCwrAJf61TXfhJ
+    ppPKP5ngV+RZdVdnoXSmDk4r8Z7REML0a8Qj1SMvcaECgYEA+LTLKWUubWggVVd+
+    uZBXdeQAcsQNVOTr2jf8/tOx330Cfc538uIPKxmSPpjrNuQFu+zZxcZczuva9O29
+    G0zGkBQsjtfZVXhPqqHB4k55azv4osFH0J0f6KRj/Y+sKeeTtff+JB4f/9/qdM6z
+    lgUVvcH3GYi3WPojAmkgyexAW+8CgYEA07S4sGkZlBAIKXonHTM8AMy9hEU4OrEq
+    q+VzBT2bELZuciRC7M419R+i91rdaA69H8rg+wj4G+LmAcR5YjsiWA1978Ts+hLv
+    Kq87kICu5Idwc4jcXG89RmGnF/qqRUbLaalUNowT7YulX+RdSaMTWIVnJyOdaSze
+    W31lEaYbCHECgYAo2DBBVR+h0ib1PRBP01e5wb8dGfuChLIDPYysIQImTPZ6yMzE
+    M8H/9wwggaandh1G9qfxJhmZ1fw4m06iTCKUCOwkbWiA8+hJgpU/4FlqdgfoWsu7
+    hAJ4h37wZocEvsZwbRDsx5HDyPdNRaESszUV2+QD6oMJ9tKHE9LRtp3/OwKBgG+h
+    YqV6tccR8QvV4lwOUPxm+SOO0Eh6dPKxCUZhJqvYVkKPhk6RqXf4V5kwa4DcDLN/
+    6cPVBebGbNvPuuWmIsTlUFumrgJrC3upbLIUeKP+GriBGRkQevHqug312eSvoMC1
+    Tbd5g2SFdw0qQFp8x82sgijsKat0wkbhxvJYcPaxAoGBALvQtakeR8CWHiRrMlKG
+    ofNzmeNHpnHRGvn7onFepZNb3er4RN1qeHos4jb0JXNJHOLYv7pH+nIUUW9SrsHq
+    h5j50CmZEa3Pw4YAHLJ8ntNeFEohLp5TuoouQj6DerlHp5yAmvQhMqAfoJDx+J5N
+    AVzcWdBnvOGA14SQDQsolJfy
+    -----END PRIVATE KEY-----
