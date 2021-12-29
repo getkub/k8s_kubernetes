@@ -32,6 +32,9 @@ case $action in
    delete)
       list=`cat ${order_file}| grep -v '#'| tac `
       ;;
+   merge)
+      list=`cat ${order_file}| grep -v '#'`
+      ;;
    *)
      echo "Unable to identify action. Accepts only apply or delete"
      exit 1
@@ -42,12 +45,25 @@ if [ $action == "apply" ] ; then
     kubectl create ns ${module}
 fi
 
+if [ $action == "merge" ] ; then
+    fname="/tmp/${module}.all-in-one.yaml"
+    if [ ! -f "$fname" ] ; then
+        echo "Deleting Existing merge file at: $fname"
+        rm -f $fname
+    fi
+fi
+
 for dir in `echo $list`
 do
     for f in `ls -1 ${module}/${dir}/*.yaml`
     do
         echo "Executing => kubectl -n $module $action -f $f"
-        kubectl -n $module $action -f $f
+        if [ $action == "merge" ] ; then
+            cat $f >> $fname
+            cat "---" >> $fname
+        elif
+            kubectl -n $module $action -f $f
+        fi
         echo "-----------------------------------------------"
     done
 done
