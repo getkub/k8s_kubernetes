@@ -4,6 +4,8 @@ kind: Ingress
 apiVersion: networking.k8s.io/v1
 metadata:
   name: "n8n-ingress"
+  annotations:
+    traefik.ingress.kubernetes.io/router.tls: "true"
 spec:
   tls:
     secretName: tls-secret
