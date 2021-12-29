@@ -1,0 +1,196 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: n8n-tls-crt-cm
+  labels:
+    io.kompose.service: n8n
+    app: n8n
+data:
+  tls.crt: |
+    -----BEGIN CERTIFICATE-----
+    MIIDjzCCAnegAwIBAgIUS0oNuIxhG2CJpzsYAyCRa9hSUDMwDQYJKoZIhvcNAQEL
+    BQAwVzEXMBUGA1UEAwwObjhuLm15ZGV2LnRlc3QxGDAWBgNVBAMMD3N2YzEubXlk
+    ZXYudGVzdDETMBEGA1UEAwwKbXlkZXYudGVzdDENMAsGA1UECgwEdGVzdDAeFw0y
+    MTEyMjkxMTQ3MTdaFw0yMjEyMjkxMTQ3MTdaMFcxFzAVBgNVBAMMDm44bi5teWRl
+    di50ZXN0MRgwFgYDVQQDDA9zdmMxLm15ZGV2LnRlc3QxEzARBgNVBAMMCm15ZGV2
+    LnRlc3QxDTALBgNVBAoMBHRlc3QwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK
+    AoIBAQDNrJX/S+zW1JikoWoVtnczfnIK58lkEG20PfFMg0z7PvZ1TNftR3eSKazE
+    XvQbTFyaz4z7zTV+essrx0KMT/13c2iMo9QfnigY0jEvnpNtUXeKKVSYpqB9kwj/
+    182J+t1Fv/1nsTk13DnwC6pmHpV4nB98jWtaCrhK/cZi7I6yy5tXKCi4PZMPKzix
+    VQdWtu2FRPm3vpILuE5oXQd5JmuihVEf6y5AGa1tDp89KoRgCBlxFLTje3V7KjwO
+    1QI2MbnqWuSZW4kuctSR1JCcACAk+1aGZp3nAxxsLSG6I9V41wwRqJe1ehtLRAOl
+    3qCWeKFAMwkWb3rO26sp1Mj3fQx/AgMBAAGjUzBRMB0GA1UdDgQWBBQhvw9IE/uU
+    7EJB3r2VKgGhNRWUIDAfBgNVHSMEGDAWgBQhvw9IE/uU7EJB3r2VKgGhNRWUIDAP
+    BgNVHRMBAf8EBTADAQH/MA0GCSqGSIb3DQEBCwUAA4IBAQAXHs+MQ0TMZPFBeFu0
+    tWNldTTmqYu07UV9wlpvjd2GZtjqrx4LDMGFkPDIsIcSrINnV5C2LwGBdK/esJmq
+    hMl6bqEchAUS169L1r9WKsS1V4Qk/ACUkUOPjwYKME8s/CWq3wL9+9EZYbfT2HzT
+    vIghhI0n/mBVTNgJ/rhGjdCugLESyj5z6fICP3/asOXYGHVgqGtr2FexJP4mKnpV
+    H1wvYpixor9rIw9RQJsNVX37OGK+SEHSld6mjM6lU+iFnhvb1aJ2QTin2kyyz+b4
+    y3xExXy8tkRPcvyfqxstuQbhUmpIVCiTAJLL9UlGIRMfl261mHExieEwPePdoHu7
+    POVM
+    -----END CERTIFICATE-----
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: n8n-tls-key-cm
+  labels:
+    io.kompose.service: n8n
+    app: n8n
+data:
+  tls.key: |
+    -----BEGIN PRIVATE KEY-----
+    MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDNrJX/S+zW1Jik
+    oWoVtnczfnIK58lkEG20PfFMg0z7PvZ1TNftR3eSKazEXvQbTFyaz4z7zTV+essr
+    x0KMT/13c2iMo9QfnigY0jEvnpNtUXeKKVSYpqB9kwj/182J+t1Fv/1nsTk13Dnw
+    C6pmHpV4nB98jWtaCrhK/cZi7I6yy5tXKCi4PZMPKzixVQdWtu2FRPm3vpILuE5o
+    XQd5JmuihVEf6y5AGa1tDp89KoRgCBlxFLTje3V7KjwO1QI2MbnqWuSZW4kuctSR
+    1JCcACAk+1aGZp3nAxxsLSG6I9V41wwRqJe1ehtLRAOl3qCWeKFAMwkWb3rO26sp
+    1Mj3fQx/AgMBAAECggEBAKAeZWQsasTRG8jHNTyUIfa/0O72hk3VkGKK+qkTa0IK
+    QXsOiOfcBJWQxkTWm3oJF+sZ++soViYSWMvLQ97Sg0SUX2dmP8UhrpusP8iPzryD
+    eOnhxU9WIYnBh3cOPaDW4Z7kmdY5HY311lEv88eutbUA7m5b9qBRyinvqZvoCCve
+    eq99hEYV/PMwlx4yWEGkkWVhek/0O1ryyWizXjxiDvtqRUEV44OL+SXNc29CvIc2
+    KZh8FE3/t2QETJCPhEHexRtVYQCj+Aw7ddO35SZNOZhMcJ+5JfzCwrAJf61TXfhJ
+    ppPKP5ngV+RZdVdnoXSmDk4r8Z7REML0a8Qj1SMvcaECgYEA+LTLKWUubWggVVd+
+    uZBXdeQAcsQNVOTr2jf8/tOx330Cfc538uIPKxmSPpjrNuQFu+zZxcZczuva9O29
+    G0zGkBQsjtfZVXhPqqHB4k55azv4osFH0J0f6KRj/Y+sKeeTtff+JB4f/9/qdM6z
+    lgUVvcH3GYi3WPojAmkgyexAW+8CgYEA07S4sGkZlBAIKXonHTM8AMy9hEU4OrEq
+    q+VzBT2bELZuciRC7M419R+i91rdaA69H8rg+wj4G+LmAcR5YjsiWA1978Ts+hLv
+    Kq87kICu5Idwc4jcXG89RmGnF/qqRUbLaalUNowT7YulX+RdSaMTWIVnJyOdaSze
+    W31lEaYbCHECgYAo2DBBVR+h0ib1PRBP01e5wb8dGfuChLIDPYysIQImTPZ6yMzE
+    M8H/9wwggaandh1G9qfxJhmZ1fw4m06iTCKUCOwkbWiA8+hJgpU/4FlqdgfoWsu7
+    hAJ4h37wZocEvsZwbRDsx5HDyPdNRaESszUV2+QD6oMJ9tKHE9LRtp3/OwKBgG+h
+    YqV6tccR8QvV4lwOUPxm+SOO0Eh6dPKxCUZhJqvYVkKPhk6RqXf4V5kwa4DcDLN/
+    6cPVBebGbNvPuuWmIsTlUFumrgJrC3upbLIUeKP+GriBGRkQevHqug312eSvoMC1
+    Tbd5g2SFdw0qQFp8x82sgijsKat0wkbhxvJYcPaxAoGBALvQtakeR8CWHiRrMlKG
+    ofNzmeNHpnHRGvn7onFepZNb3er4RN1qeHos4jb0JXNJHOLYv7pH+nIUUW9SrsHq
+    h5j50CmZEa3Pw4YAHLJ8ntNeFEohLp5TuoouQj6DerlHp5yAmvQhMqAfoJDx+J5N
+    AVzcWdBnvOGA14SQDQsolJfy
+    -----END PRIVATE KEY-----
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: n8n-claim0
+  name: n8n-claim0
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+status: {}
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: n8n-claim1
+  name: n8n-claim1
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+status: {}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: n8n
+  name: n8n
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: n8n
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        io.kompose.service: n8n
+    spec:
+      containers:
+        - env:
+            - name: GENERIC_TIMEZONE
+              value: UTC
+            - name: N8N_BASIC_AUTH_ACTIVE
+              value: "true"
+            - name: N8N_BASIC_AUTH_PASSWORD
+              value: password
+            - name: N8N_BASIC_AUTH_USER
+              value: user
+            - name: N8N_HOST
+              value: n8n.mydev.test
+            - name: N8N_PORT
+              value: "5678"
+            - name: N8N_PROTOCOL
+              value: https
+            - name: N8N_SSL_KEY
+              value: /root/tls.key
+            - name: N8N_SSL_CERT
+              value: /root/tls.crt
+            - name: NODE_ENV
+              value: production
+            - name: WEBHOOK_URL
+              value: https://n8n.mydev.test/
+          image: n8nio/n8n
+          name: n8n
+          ports:
+            - containerPort: 5678
+          resources: {}
+          volumeMounts:
+            - mountPath: /root/.n8n
+              name: n8n-claim0
+            - mountPath: /opt/workflows
+              name: n8n-claim1
+            - mountPath: /root/tls.crt
+              subPath: tls.crt
+              name: n8n-tls-crt-vol
+            - mountPath: /root/tls.key
+              subPath: tls.key
+              name: n8n-tls-key-vol
+      restartPolicy: Always
+      volumes:
+        - name: n8n-claim0
+          persistentVolumeClaim:
+            claimName: n8n-claim0
+        - name: n8n-claim1
+          persistentVolumeClaim:
+            claimName: n8n-claim1
+        - name: n8n-tls-crt-vol
+          configMap:
+            name: n8n-tls-crt-cm
+        - name: n8n-tls-key-vol
+          configMap:
+            name: n8n-tls-key-cm
+status: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    io.kompose.service: n8n
+  name: n8n
+spec:
+  ports:
+    - name: "5678"
+      port: 5678
+      targetPort: 5678
+  selector:
+    io.kompose.service: n8n
+  type: LoadBalancer
+
+
+---
