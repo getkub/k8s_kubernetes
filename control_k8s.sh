@@ -60,7 +60,7 @@ do
         if [ $action == "merge" ] ; then
             echo "Merging: $f"
             cat $f >> $fname
-            echo "---" >> $fname
+            echo "\n---" >> $fname
         else
             echo "Executing => kubectl -n $module $action -f $f"
             kubectl -n $module $action -f $f
