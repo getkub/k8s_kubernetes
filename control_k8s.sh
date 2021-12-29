@@ -46,7 +46,7 @@ if [ $action == "apply" ] ; then
 fi
 
 if [ $action == "merge" ] ; then
-    fname="/tmp/${module}.all-in-one.yaml"
+    fname="/tmp/${module}.all_in_one.yaml"
     if [ ! -f "$fname" ] ; then
         echo "Deleting Existing merge file at: $fname"
         rm -f $fname
@@ -72,5 +72,5 @@ done
 if [ $action == "delete" ] ; then
     kubectl delete ns ${module}
 elif [ $action == "merge" ] ; then
-    echo "Output file: ${fname} "
+    echo "Output file => ${fname} "
 fi
