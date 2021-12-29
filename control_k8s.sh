@@ -61,7 +61,7 @@ do
         if [ $action == "merge" ] ; then
             cat $f >> $fname
             cat "---" >> $fname
-        elif
+        else
             kubectl -n $module $action -f $f
         fi
         echo "-----------------------------------------------"
