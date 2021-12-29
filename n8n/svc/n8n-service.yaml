@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose -f resolved.docker-compose.yml convert
+    kompose.version: 1.26.0 (40646f47)
+    traefik.enable: "true"
+    traefik.http.middlewares.n8n.headers.SSLHost: mydev.lan
+    traefik.http.middlewares.n8n.headers.SSLRedirect: "true"
+    traefik.http.middlewares.n8n.headers.STSIncludeSubdomains: "true"
+    traefik.http.middlewares.n8n.headers.STSPreload: "true"
+    traefik.http.middlewares.n8n.headers.STSSeconds: "315360000"
+    traefik.http.middlewares.n8n.headers.browserXSSFilter: "true"
+    traefik.http.middlewares.n8n.headers.contentTypeNosniff: "true"
+    traefik.http.middlewares.n8n.headers.forceSTSHeader: "true"
+    traefik.http.routers.n8n.entrypoints: web,websecure
+    traefik.http.routers.n8n.rule: Host(`n8n.mydev.lan`)
+    traefik.http.routers.n8n.tls: "true"
+    traefik.http.routers.n8n.tls.certresolver: mytlschallenge
+  creationTimestamp: null
+  labels:
+    io.kompose.service: n8n
+  name: n8n
+spec:
+  ports:
+    - name: "5678"
+      port: 5678
+      targetPort: 5678
+  selector:
+    io.kompose.service: n8n
+status:
+  loadBalancer: {}

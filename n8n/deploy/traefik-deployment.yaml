@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose -f resolved.docker-compose.yml convert
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: traefik
+  name: traefik
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: traefik
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose -f resolved.docker-compose.yml convert
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: traefik
+    spec:
+      containers:
+        - args:
+            - --api=true
+            - --api.insecure=true
+            - --providers.docker=true
+            - --providers.docker.exposedbydefault=false
+            - --entrypoints.web.address=:80
+            - --entrypoints.web.http.redirections.entryPoint.to=websecure
+            - --entrypoints.web.http.redirections.entrypoint.scheme=https
+            - --entrypoints.websecure.address=:443
+            - --certificatesresolvers.mytlschallenge.acme.tlschallenge=true
+            - --certificatesresolvers.mytlschallenge.acme.email=n8n@mydev.lan
+            - --certificatesresolvers.mytlschallenge.acme.storage=/letsencrypt/acme.json
+          image: traefik
+          name: traefik
+          ports:
+            - containerPort: 80
+            - containerPort: 443
+          resources: {}
+          volumeMounts:
+            - mountPath: /letsencrypt
+              name: traefik-claim0
+            - mountPath: /var/run/docker.sock
+              name: traefik-claim1
+              readOnly: true
+      restartPolicy: Always
+      volumes:
+        - name: traefik-claim0
+          persistentVolumeClaim:
+            claimName: traefik-claim0
+        - name: traefik-claim1
+          persistentVolumeClaim:
+            claimName: traefik-claim1
+            readOnly: true
+status: {}

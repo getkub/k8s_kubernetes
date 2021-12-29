@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose -f resolved.docker-compose.yml convert
+    kompose.version: 1.26.0 (40646f47)
+    traefik.enable: "true"
+    traefik.http.middlewares.n8n.headers.SSLHost: mydev.lan
+    traefik.http.middlewares.n8n.headers.SSLRedirect: "true"
+    traefik.http.middlewares.n8n.headers.STSIncludeSubdomains: "true"
+    traefik.http.middlewares.n8n.headers.STSPreload: "true"
+    traefik.http.middlewares.n8n.headers.STSSeconds: "315360000"
+    traefik.http.middlewares.n8n.headers.browserXSSFilter: "true"
+    traefik.http.middlewares.n8n.headers.contentTypeNosniff: "true"
+    traefik.http.middlewares.n8n.headers.forceSTSHeader: "true"
+    traefik.http.routers.n8n.entrypoints: web,websecure
+    traefik.http.routers.n8n.rule: Host(`n8n.mydev.lan`)
+    traefik.http.routers.n8n.tls: "true"
+    traefik.http.routers.n8n.tls.certresolver: mytlschallenge
+  creationTimestamp: null
+  labels:
+    io.kompose.service: n8n
+  name: n8n
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: n8n
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose -f resolved.docker-compose.yml convert
+        kompose.version: 1.26.0 (40646f47)
+        traefik.enable: "true"
+        traefik.http.middlewares.n8n.headers.SSLHost: mydev.lan
+        traefik.http.middlewares.n8n.headers.SSLRedirect: "true"
+        traefik.http.middlewares.n8n.headers.STSIncludeSubdomains: "true"
+        traefik.http.middlewares.n8n.headers.STSPreload: "true"
+        traefik.http.middlewares.n8n.headers.STSSeconds: "315360000"
+        traefik.http.middlewares.n8n.headers.browserXSSFilter: "true"
+        traefik.http.middlewares.n8n.headers.contentTypeNosniff: "true"
+        traefik.http.middlewares.n8n.headers.forceSTSHeader: "true"
+        traefik.http.routers.n8n.entrypoints: web,websecure
+        traefik.http.routers.n8n.rule: Host(`n8n.mydev.lan`)
+        traefik.http.routers.n8n.tls: "true"
+        traefik.http.routers.n8n.tls.certresolver: mytlschallenge
+      creationTimestamp: null
+      labels:
+        io.kompose.service: n8n
+    spec:
+      containers:
+        - env:
+            - name: GENERIC_TIMEZONE
+              value: UTC
+            - name: N8N_BASIC_AUTH_ACTIVE
+              value: "true"
+            - name: N8N_BASIC_AUTH_PASSWORD
+              value: password
+            - name: N8N_BASIC_AUTH_USER
+              value: user
+            - name: N8N_HOST
+              value: n8n.mydev.lan
+            - name: N8N_PORT
+              value: "5678"
+            - name: N8N_PROTOCOL
+              value: https
+            - name: NODE_ENV
+              value: production
+            - name: WEBHOOK_URL
+              value: https://n8n.mydev.lan/
+          image: n8nio/n8n
+          name: n8n
+          ports:
+            - containerPort: 5678
+          resources: {}
+          volumeMounts:
+            - mountPath: /home/node/.n8n
+              name: n8n-claim0
+      restartPolicy: Always
+      volumes:
+        - name: n8n-claim0
+          persistentVolumeClaim:
+            claimName: n8n-claim0
+status: {}
