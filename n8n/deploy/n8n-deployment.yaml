@@ -64,12 +64,18 @@ spec:
             - mountPath: /root/.n8n
               name: n8n-claim0
             - mountPath: /root/tls.crt
-              name: n8n-tls-crt-cm
+              name: n8n-tls-crt-vol
             - mountPath: /root/tls.key
-              name: n8n-tls-key-cm
+              name: n8n-tls-key-vol
       restartPolicy: Always
       volumes:
         - name: n8n-claim0
           persistentVolumeClaim:
             claimName: n8n-claim0
+        - name: n8n-tls-crt-vol
+          configMap:
+            name: n8n-tls-crt-cm
+        - name: n8n-tls-key-vol
+          configMap:
+            name: n8n-tls-key-cm
 status: {}
