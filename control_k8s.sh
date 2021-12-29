@@ -57,11 +57,12 @@ for dir in `echo $list`
 do
     for f in `ls -1 ${module}/${dir}/*.yaml`
     do
-        echo "Executing => kubectl -n $module $action -f $f"
         if [ $action == "merge" ] ; then
+            echo "Merging: $f"
             cat $f >> $fname
-            cat "---" >> $fname
+            echo "---" >> $fname
         else
+            echo "Executing => kubectl -n $module $action -f $f"
             kubectl -n $module $action -f $f
         fi
         echo "-----------------------------------------------"
