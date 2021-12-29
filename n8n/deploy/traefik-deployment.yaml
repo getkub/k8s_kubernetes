@@ -1,10 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    kompose.cmd: kompose -f resolved.docker-compose.yml convert
-    kompose.version: 1.26.0 (40646f47)
-  creationTimestamp: null
   labels:
     io.kompose.service: traefik
   name: traefik
@@ -17,10 +13,6 @@ spec:
     type: Recreate
   template:
     metadata:
-      annotations:
-        kompose.cmd: kompose -f resolved.docker-compose.yml convert
-        kompose.version: 1.26.0 (40646f47)
-      creationTimestamp: null
       labels:
         io.kompose.service: traefik
     spec:
@@ -47,15 +39,14 @@ spec:
             - mountPath: /letsencrypt
               name: traefik-claim0
             - mountPath: /var/run/docker.sock
-              name: traefik-claim1
+              name: dockersock
               readOnly: true
       restartPolicy: Always
       volumes:
         - name: traefik-claim0
           persistentVolumeClaim:
             claimName: traefik-claim0
-        - name: traefik-claim1
-          persistentVolumeClaim:
-            claimName: traefik-claim1
-            readOnly: true
+        - name: dockersock
+          hostPath:
+            path: /var/run/docker.sock
 status: {}

@@ -2,8 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    kompose.cmd: kompose -f resolved.docker-compose.yml convert
-    kompose.version: 1.26.0 (40646f47)
     traefik.enable: "true"
     traefik.http.middlewares.n8n.headers.SSLHost: mydev.lan
     traefik.http.middlewares.n8n.headers.SSLRedirect: "true"
@@ -31,8 +29,6 @@ spec:
   template:
     metadata:
       annotations:
-        kompose.cmd: kompose -f resolved.docker-compose.yml convert
-        kompose.version: 1.26.0 (40646f47)
         traefik.enable: "true"
         traefik.http.middlewares.n8n.headers.SSLHost: mydev.lan
         traefik.http.middlewares.n8n.headers.SSLRedirect: "true"
@@ -46,7 +42,6 @@ spec:
         traefik.http.routers.n8n.rule: Host(`n8n.mydev.lan`)
         traefik.http.routers.n8n.tls: "true"
         traefik.http.routers.n8n.tls.certresolver: mytlschallenge
-      creationTimestamp: null
       labels:
         io.kompose.service: n8n
     spec:
