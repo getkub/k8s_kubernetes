@@ -22,11 +22,14 @@ metadata:
     ingress.kubernetes.io/rewrite-target: /
   name: n8n-ingress
 spec:
-  tls: 
-  - secretName: tls-secret
+  tls:
+    - hosts:
+      - mydev.test
+      secretName: tls-secret
   ingressClassName: nginx
   rules:
-  - http:
+  - host: mydev.test
+    http:
       paths:
       - path: /n8n
         pathType: Prefix
