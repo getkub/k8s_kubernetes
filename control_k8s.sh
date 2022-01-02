@@ -30,7 +30,7 @@ case $action in
       list=`cat ${order_file}| grep -v '#' `
       ;;
    delete)
-      list=`tail -r  ${order_file}| grep -v '#' `
+      list=`tail -r ${order_file}| grep -v '#' `
       ;;
    merge)
       list=`cat ${order_file}| grep -v '#'`
