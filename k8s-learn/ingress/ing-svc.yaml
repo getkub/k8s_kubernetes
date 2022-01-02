@@ -6,7 +6,8 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-  - http:
+  - host: mydev.test
+    http:
       paths:
       - path: /svc1
         pathType: Prefix
@@ -15,7 +16,8 @@ spec:
             name: http-svc1
             port:
               number: 8000
-  - http:
+  - host: mydev.test
+    http:
       paths:
       - path: /svc2
         pathType: Prefix
