@@ -33,17 +33,11 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
-    nginx.ingress.kubernetes.io/proxy-body-size: "0"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
-    kubernetes.io/tls-acme: 'true'
+    nginx.ingress.kubernetes.io/rewrite-target: /
   name: example-ingress
 spec:
-  ingressClassName: nginx
-  # tls:
-  # - hosts:
-  #   - mydev.test
-  #   secretName: tls-secret
+  tls:
+  - secretName: tls-secret
   rules:
   - host: mydev.test
     http:
