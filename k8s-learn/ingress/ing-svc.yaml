@@ -1,46 +1,12 @@
-# apiVersion: networking.k8s.io/v1
-# kind: Ingress
-# metadata:
-#   name: example-ingress
-#   annotations:
-#     nginx.ingress.kubernetes.io/rewrite-target: /$1
-# spec:
-#   rules:
-#     - host: local.dev
-#       http:
-#         paths:
-#           - path: /
-#             pathType: Prefix
-#             backend:
-#               service:
-#                 name: service1
-#                 port:
-#                   number: 80
----
-apiVersion: networking.k8s.io/v1
-kind: IngressClass
-metadata:
-  labels:
-    app.kubernetes.io/component: controller 
-  name: nginx
-  annotations:
-    ingressclass.kubernetes.io/is-default-class: "true"
-spec:
-  controller: k8s.io/ingress-nginx
-
----
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
+  name: learn-ingress
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
-  name: example-ingress
 spec:
-  tls:
-  - secretName: tls-secret
   rules:
-  - host: mydev.test
-    http:
+  - http:
       paths:
       - path: /svc1
         pathType: Prefix
@@ -49,8 +15,7 @@ spec:
             name: http-svc1
             port:
               number: 8000
-  - host: mydev.test
-    http:
+  - http:
       paths:
       - path: /svc2
         pathType: Prefix
@@ -60,3 +25,44 @@ spec:
             port:
               number: 8000
 ---
+# apiVersion: networking.k8s.io/v1
+# kind: IngressClass
+# metadata:
+#   labels:
+#     app.kubernetes.io/component: controller 
+#   name: nginx
+#   annotations:
+#     ingressclass.kubernetes.io/is-default-class: "true"
+# spec:
+#   controller: k8s.io/ingress-nginx
+
+# ---
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   annotations:
+#     nginx.ingress.kubernetes.io/rewrite-target: /$1
+#   name: learn-ingress
+# spec:
+#   ingressClassName: nginx
+#   rules:
+#   - host: mydev.test
+#     http:
+#       paths:
+#       - path: /svc1
+#         pathType: Prefix
+#         backend:
+#           service:
+#             name: http-svc1
+#             port:
+#               number: 8000
+#   - http:
+#       paths:
+#       - path: /svc2
+#         pathType: Prefix
+#         backend:
+#           service:
+#             name: http-svc2
+#             port:
+#               number: 8000
+# ---
