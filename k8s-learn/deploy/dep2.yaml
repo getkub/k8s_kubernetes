@@ -2,19 +2,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: http-svc1
+  name: http-svc2
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: http-svc1
+      app: http-svc2
   template:
     metadata:
       labels:
-        app: http-svc1
+        app: http-svc2
     spec:
       containers:
-      - name: http-svc1
+      - name: http-svc2
         image: k8s.gcr.io/e2e-test-images/echoserver:2.3
         ports:
         - containerPort: 8080

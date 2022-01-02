@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: http-svc1
   labels:
-    app: http-svc
+    app: http-svc1
 spec:
   ports:
   - port: 8000
@@ -11,5 +11,5 @@ spec:
     protocol: TCP
     name: http
   selector:
-    app: http-svc
+    app: http-svc1
 ---
