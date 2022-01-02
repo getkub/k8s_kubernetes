@@ -31,13 +31,15 @@ spec:
             - name: N8N_PORT
               value: "5678"
             - name: N8N_PROTOCOL
-              value: http
+              value: https
+            - name: N8N_SSL_KEY
+              value: /root/tls.key
+            - name: N8N_SSL_CERT
+              value: /root/tls.crt
             - name: NODE_ENV
               value: production
             - name: WEBHOOK_URL
               value: https://n8n.mydev.test/
-            # - name: VUE_APP_URL_BASE_API
-            #   value: https://n8n.mydev.test/
           image: n8nio/n8n
           name: n8n
           ports:
@@ -48,6 +50,12 @@ spec:
               name: n8n-claim0
             - mountPath: /opt/workflows
               name: n8n-claim1
+            - mountPath: /root/tls.crt
+              subPath: tls.crt
+              name: n8n-tls-crt-vol
+            - mountPath: /root/tls.key
+              subPath: tls.key
+              name: n8n-tls-key-vol
       restartPolicy: Always
       volumes:
         - name: n8n-claim0
@@ -56,4 +64,10 @@ spec:
         - name: n8n-claim1
           persistentVolumeClaim:
             claimName: n8n-claim1
+        - name: n8n-tls-crt-vol
+          configMap:
+            name: n8n-tls-crt-cm
+        - name: n8n-tls-key-vol
+          configMap:
+            name: n8n-tls-key-cm
 status: {}
