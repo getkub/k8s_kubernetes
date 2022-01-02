@@ -1,4 +1,5 @@
-cm
+# cm
 pvc
 deploy
 svc
+ingress
