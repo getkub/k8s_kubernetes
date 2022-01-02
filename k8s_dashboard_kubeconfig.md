@@ -1,3 +1,8 @@
+## Fairly automated 
+Check for k8s_dashboard module
+
+
+# Manual Installation
 ## Apply GUI package
 ```
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.4.0/aio/deploy/recommended.yaml
