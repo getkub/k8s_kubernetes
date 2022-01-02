@@ -42,11 +42,11 @@ spec:
   ingressClassName: nginx
   tls:
   - hosts:
-    - svc1.local.dev
-    - svc2.local.dev
+    - svc1.mydev.test
+    - svc2.mydev.test
     secretName: tls-secret
   rules:
-  - host: svc1.local.dev
+  - host: svc1.mydev.test
     http:
       paths:
       - path: /
@@ -56,7 +56,7 @@ spec:
             name: http-svc1
             port:
               number: 8000
-  - host: svc2.local.dev
+  - host: svc2.mydev.test
     http:
       paths:
       - path: /
