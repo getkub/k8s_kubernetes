@@ -1,44 +1,33 @@
----
-apiVersion: networking.k8s.io/v1
-kind: IngressClass
-metadata:
-  labels:
-    app.kubernetes.io/component: controller 
-  name: nginx
-  annotations:
-    ingressclass.kubernetes.io/is-default-class: "true"
-spec:
-  controller: k8s.io/ingress-nginx
-
----
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  annotations:
-    nginx.ingress.kubernetes.io/proxy-body-size: "0"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
-    kubernetes.io/tls-acme: 'true'
   name: soar-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
-  tls:
-    - hosts:
-      - svc1.local.dev
-      - n8n.local.dev
-      # This assumes tls-secret exists and the SSL
-      # certificate contains a CN for svc1.local.dev
-      secretName: tls-secret
-  ingressClassName: nginx
+  # tls:
+  #   - hosts:
+  #     - mydev.test
+  #     secretName: tls-secret
   rules:
-  - host: svc1.local.dev
+  - host: svc1.mydev.test
     http:
       paths:
-      - path: /n8n
+      - path: /
         pathType: Prefix
         backend:
           service:
-            name: n8n
+            name: thehive
             port:
-              number: 5678
-
+              number: 9000
+  - host: svc2.mydev.test
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: cortex
+            port:
+              number: 9001
 ---
