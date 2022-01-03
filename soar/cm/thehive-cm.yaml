@@ -38,7 +38,7 @@ data:
           url : "http://cortex:9001"
           auth {
             type : "bearer"
-            key : "RTwF0Zb3OyPEUSH4Iu3R2CmVRt474fzL"
+            key : "M3eMk9FoK81GVxRFpd+jhOxRDPiahHgg"
           }
         }
       ]
