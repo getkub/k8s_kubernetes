@@ -8,8 +8,8 @@ version=0.2
 # - INPUT_USER name is specified
 # - INPUT_ROLE_MAP_ID is unique key present in ${role_mapper_file}
 
-INPUT_USER=$1
-INPUT_ROLE_MAP_ID=$2
+export INPUT_USER=$1
+export INPUT_ROLE_MAP_ID=$2
 
 role_mapper_file="role_mapper.csv"
 build_dir="/tmp/create_k8_user"
