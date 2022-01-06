@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Config
+clusters:
+- cluster:
+    certificate-authority-data: "${K8_CA64}"
+    server: ${CLUSTER_SERVER}
+  name: kubernetes
+users:
+- name: ${INPUT_USER}
+  user:
+    client-certificate-data: ${KUBE_CRT64}
+    client-key-data: ${KUBE_KEY64}
+contexts:
+- context:
+    cluster: kubernetes
+    user: ${INPUT_USER}
+  name: ${INPUT_USER}-kubernetes
+current-context: ${INPUT_USER}-kubernetes
