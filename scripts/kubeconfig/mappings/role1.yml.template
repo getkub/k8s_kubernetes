@@ -1,7 +1,7 @@
 kind: Role
 metadata:
   name: ${INPUT_USER_ROLE}
-  namespace: ${INPUT_USER_ROLE_NS}
+  namespace: ${INPUT_USER_NS}
 rules:
 - apiGroups:
   - ""
