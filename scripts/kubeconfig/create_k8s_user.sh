@@ -4,19 +4,22 @@
 version=0.2
 # ------------------------------------------------------------------------------ #
 
-# Input requires "user"
 # Assumptions
-# - The module will be the namespace name
-# - The module will contain relevant templates
+# - INPUT_USER name is specified
+# - INPUT_ROLE_MAP_ID is unique key present in ${role_mapper_file}
 
 INPUT_USER=$1
+INPUT_ROLE_MAP_ID=$2
+
+export CLUSTER_SERVER: "https://mycluster:6443"
 csr_cfg_template="csr_cfg.template"
 csr_yml_template="csr_yml.template"
 kube_yml_template="kube_yml.template"
+role_mapper_file="role_mapper.csv"
 
-if [ $# -ne 1 ]; then
+if [ $# -ne 2 ]; then
     echo "Expected arguments"
-    echo "<script> <user>"
+    echo "<script> <user> <user_role>"
     exit 10
 fi
 
