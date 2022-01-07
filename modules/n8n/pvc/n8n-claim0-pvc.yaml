@@ -8,6 +8,10 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
+#   selector:
+#     matchLabels:
+#       disk-type: "ssd-10gb"
+#   storageClassName: "local-storage"
   resources:
     requests:
       storage: 2Gi
