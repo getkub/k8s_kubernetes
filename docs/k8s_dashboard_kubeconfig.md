@@ -1,5 +1,9 @@
 ## Fairly automated 
 Check for [k8s_dashboard](../modules/k8s_dashboard) module
+```
+kubectl proxy &
+```
+http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/#/login
 
 
 # Manual Installation
