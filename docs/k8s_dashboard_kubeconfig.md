@@ -1,5 +1,5 @@
 ## Fairly automated 
-Check for k8s_dashboard module
+Check for [k8s_dashboard](../modules/k8s_dashboard) module
 
 
 # Manual Installation

@@ -2,6 +2,7 @@
 
 ### K8s commands
 ```
+export KUBECONFIG=/tmp/somekubeConfig
 ns="default"
 kubectl config set-context $(kubectl config current-context) --namespace=${ns}
 podname=""
