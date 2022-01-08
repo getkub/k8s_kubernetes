@@ -33,3 +33,14 @@ kubectl -n $NS get pods
 ./control_k8s.sh awx apply
 kubectl -n awx get all
 ```
+
+## Post Setup
+```
+# Log to the relevant pod and container
+kubectl -n awx get pod
+pod="awx-64bc58f8d6-6j5pv"
+kubectl -n awx exec -it $pod -c awx-web -- /bin/bash
+awx-manage createsuperuser --username awx --email awx@dev.test
+
+http://<clusterip>:9080/home
+```
