@@ -1,0 +1,448 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cortex-cm
+  labels:
+    app: cortex
+data:
+  application.conf: |
+    play.http.secret.key="CortexTestPassword"
+
+    ## ElasticSearch
+    search {
+      index = cortex
+      uri = "http://elasticsearch:9200"
+    }
+
+    ## Cache
+    cache.job = 10 minutes
+
+    job {
+      runner = [docker, process]
+    }
+
+    ## ANALYZERS
+    analyzer {
+      urls = [
+        "https://download.thehive-project.org/analyzers.json"
+        #"/absolute/path/of/analyzers"
+      ]
+    }
+
+    # RESPONDERS
+    responder {
+      urls = [
+        "https://download.thehive-project.org/responders.json"
+        #"/absolute/path/of/responders"
+      ]
+    }
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: thehive-cm
+  labels:
+    app: thehive
+data:
+  application.conf: |
+    play.http.secret.key="ThehiveTestPassword"
+
+    ## For test only !
+    db.janusgraph {
+      storage.backend: berkeleyje
+      storage.directory: /opt/thp/thehive/db
+      berkeleyje.freeDisk: 200
+
+      ## Index configuration
+      index {
+        search {
+          backend: lucene
+          directory: /opt/thp/thehive/index
+        }
+      }
+    }
+
+    storage {
+      provider: localfs
+      localfs.location: /opt/thp/thehive/data
+    }
+
+    play.http.parser.maxDiskBuffer: 50MB
+
+    play.modules.enabled += org.thp.thehive.connector.cortex.CortexModule
+    cortex {
+      servers : [
+        {
+          name : "local"
+          url : "http://cortex:9001"
+          auth {
+            type : "bearer"
+            key : "M3eMk9FoK81GVxRFpd+jhOxRDPiahHgg"
+          }
+        }
+      ]
+      # Check job update time intervalcortex
+      refreshDelay = 5 seconds
+      # Maximum number of successive errors before give up
+      maxRetryOnError = 3
+      # Check remote Cortex status time interval
+      statusCheckInterval = 30 seconds
+    }
+
+    # Configure webhooks
+    notification.webhook.endpoints = [
+      {
+        name: local
+        url: "http://n8n:5678/"
+        version: 0
+        wsConfig: {}
+        auth: {type:"none"}
+        includedTheHiveOrganisations: ["*"]
+        excludedTheHiveOrganisations: []
+      }
+    ]
+
+
+---
+apiVersion: v1
+data:
+  tls.crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURqekNDQW5lZ0F3SUJBZ0lVUzBvTnVJeGhHMkNKcHpzWUF5Q1JhOWhTVURNd0RRWUpLb1pJaHZjTkFRRUwKQlFBd1Z6RVhNQlVHQTFVRUF3d09iamh1TG0xNVpHVjJMblJsYzNReEdEQVdCZ05WQkFNTUQzTjJZekV1YlhsawpaWFl1ZEdWemRERVRNQkVHQTFVRUF3d0tiWGxrWlhZdWRHVnpkREVOTUFzR0ExVUVDZ3dFZEdWemREQWVGdzB5Ck1URXlNamt4TVRRM01UZGFGdzB5TWpFeU1qa3hNVFEzTVRkYU1GY3hGekFWQmdOVkJBTU1EbTQ0Ymk1dGVXUmwKZGk1MFpYTjBNUmd3RmdZRFZRUUREQTl6ZG1NeExtMTVaR1YyTG5SbGMzUXhFekFSQmdOVkJBTU1DbTE1WkdWMgpMblJsYzNReERUQUxCZ05WQkFvTUJIUmxjM1F3Z2dFaU1BMEdDU3FHU0liM0RRRUJBUVVBQTRJQkR3QXdnZ0VLCkFvSUJBUUROckpYL1MrelcxSmlrb1dvVnRuY3pmbklLNThsa0VHMjBQZkZNZzB6N1B2WjFUTmZ0UjNlU0thekUKWHZRYlRGeWF6NHo3elRWK2Vzc3J4MEtNVC8xM2MyaU1vOVFmbmlnWTBqRXZucE50VVhlS0tWU1lwcUI5a3dqLwoxODJKK3QxRnYvMW5zVGsxM0Rud0M2cG1IcFY0bkI5OGpXdGFDcmhLL2NaaTdJNnl5NXRYS0NpNFBaTVBLeml4ClZRZFd0dTJGUlBtM3ZwSUx1RTVvWFFkNUptdWloVkVmNnk1QUdhMXREcDg5S29SZ0NCbHhGTFRqZTNWN0tqd08KMVFJMk1ibnFXdVNaVzRrdWN0U1IxSkNjQUNBaysxYUdacDNuQXh4c0xTRzZJOVY0MXd3UnFKZTFlaHRMUkFPbAozcUNXZUtGQU13a1diM3JPMjZzcDFNajNmUXgvQWdNQkFBR2pVekJSTUIwR0ExVWREZ1FXQkJRaHZ3OUlFL3VVCjdFSkIzcjJWS2dHaE5SV1VJREFmQmdOVkhTTUVHREFXZ0JRaHZ3OUlFL3VVN0VKQjNyMlZLZ0doTlJXVUlEQVAKQmdOVkhSTUJBZjhFQlRBREFRSC9NQTBHQ1NxR1NJYjNEUUVCQ3dVQUE0SUJBUUFYSHMrTVEwVE1aUEZCZUZ1MAp0V05sZFRUbXFZdTA3VVY5d2xwdmpkMkdadGpxcng0TERNR0ZrUERJc0ljU3JJTm5WNUMyTHdHQmRLL2VzSm1xCmhNbDZicUVjaEFVUzE2OUwxcjlXS3NTMVY0UWsvQUNVa1VPUGp3WUtNRThzL0NXcTN3TDkrOUVaWWJmVDJIelQKdklnaGhJMG4vbUJWVE5nSi9yaEdqZEN1Z0xFU3lqNXo2ZklDUDMvYXNPWFlHSFZncUd0cjJGZXhKUDRtS25wVgpIMXd2WXBpeG9yOXJJdzlSUUpzTlZYMzdPR0srU0VIU2xkNm1qTTZsVStpRm5odmIxYUoyUVRpbjJreXl6K2I0CnkzeEV4WHk4dGtSUGN2eWZxeHN0dVFiaFVtcElWQ2lUQUpMTDlVbEdJUk1mbDI2MW1IRXhpZUV3UGVQZG9IdTcKUE9WTQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+  tls.key: LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JSUV2Z0lCQURBTkJna3Foa2lHOXcwQkFRRUZBQVNDQktnd2dnU2tBZ0VBQW9JQkFRRE5ySlgvUyt6VzFKaWsKb1dvVnRuY3pmbklLNThsa0VHMjBQZkZNZzB6N1B2WjFUTmZ0UjNlU0thekVYdlFiVEZ5YXo0ejd6VFYrZXNzcgp4MEtNVC8xM2MyaU1vOVFmbmlnWTBqRXZucE50VVhlS0tWU1lwcUI5a3dqLzE4MkordDFGdi8xbnNUazEzRG53CkM2cG1IcFY0bkI5OGpXdGFDcmhLL2NaaTdJNnl5NXRYS0NpNFBaTVBLeml4VlFkV3R1MkZSUG0zdnBJTHVFNW8KWFFkNUptdWloVkVmNnk1QUdhMXREcDg5S29SZ0NCbHhGTFRqZTNWN0tqd08xUUkyTWJucVd1U1pXNGt1Y3RTUgoxSkNjQUNBaysxYUdacDNuQXh4c0xTRzZJOVY0MXd3UnFKZTFlaHRMUkFPbDNxQ1dlS0ZBTXdrV2Izck8yNnNwCjFNajNmUXgvQWdNQkFBRUNnZ0VCQUtBZVpXUXNhc1RSRzhqSE5UeVVJZmEvME83MmhrM1ZrR0tLK3FrVGEwSUsKUVhzT2lPZmNCSldReGtUV20zb0pGK3NaKytzb1ZpWVNXTXZMUTk3U2cwU1VYMmRtUDhVaHJwdXNQOGlQenJ5RAplT25oeFU5V0lZbkJoM2NPUGFEVzRaN2ttZFk1SFkzMTFsRXY4OGV1dGJVQTdtNWI5cUJSeWludnFadm9DQ3ZlCmVxOTloRVlWL1BNd2x4NHlXRUdra1dWaGVrLzBPMXJ5eVdpelhqeGlEdnRxUlVFVjQ0T0wrU1hOYzI5Q3ZJYzIKS1poOEZFMy90MlFFVEpDUGhFSGV4UnRWWVFDaitBdzdkZE8zNVNaTk9aaE1jSis1SmZ6Q3dyQUpmNjFUWGZoSgpwcFBLUDVuZ1YrUlpkVmRub1hTbURrNHI4WjdSRU1MMGE4UWoxU012Y2FFQ2dZRUErTFRMS1dVdWJXZ2dWVmQrCnVaQlhkZVFBY3NRTlZPVHIyamY4L3RPeDMzMENmYzUzOHVJUEt4bVNQcGpyTnVRRnUrelp4Y1pjenV2YTlPMjkKRzB6R2tCUXNqdGZaVlhoUHFxSEI0azU1YXp2NG9zRkgwSjBmNktSai9ZK3NLZWVUdGZmK0pCNGYvOS9xZE02egpsZ1VWdmNIM0dZaTNXUG9qQW1rZ3lleEFXKzhDZ1lFQTA3UzRzR2tabEJBSUtYb25IVE04QU15OWhFVTRPckVxCnErVnpCVDJiRUxadWNpUkM3TTQxOVIraTkxcmRhQTY5SDhyZyt3ajRHK0xtQWNSNVlqc2lXQTE5NzhUcytoTHYKS3E4N2tJQ3U1SWR3YzRqY1hHODlSbUduRi9xcVJVYkxhYWxVTm93VDdZdWxYK1JkU2FNVFdJVm5KeU9kYVN6ZQpXMzFsRWFZYkNIRUNnWUFvMkRCQlZSK2gwaWIxUFJCUDAxZTV3YjhkR2Z1Q2hMSURQWXlzSVFJbVRQWjZ5TXpFCk04SC85d3dnZ2FhbmRoMUc5cWZ4SmhtWjFmdzRtMDZpVENLVUNPd2tiV2lBOCtoSmdwVS80RmxxZGdmb1dzdTcKaEFKNGgzN3dab2NFdnNad2JSRHN4NUhEeVBkTlJhRVNzelVWMitRRDZvTUo5dEtIRTlMUnRwMy9Pd0tCZ0craApZcVY2dGNjUjhRdlY0bHdPVVB4bStTT08wRWg2ZFBLeENVWmhKcXZZVmtLUGhrNlJxWGY0VjVrd2E0RGNETE4vCjZjUFZCZWJHYk52UHV1V21Jc1RsVUZ1bXJnSnJDM3VwYkxJVWVLUCtHcmlCR1JrUWV2SHF1ZzMxMmVTdm9NQzEKVGJkNWcyU0ZkdzBxUUZwOHg4MnNnaWpzS2F0MHdrYmh4dkpZY1BheEFvR0JBTHZRdGFrZVI4Q1dIaVJyTWxLRwpvZk56bWVOSHBuSFJHdm43b25GZXBaTmIzZXI0Uk4xcWVIb3M0amIwSlhOSkhPTFl2N3BIK25JVVVXOVNyc0hxCmg1ajUwQ21aRWEzUHc0WUFITEo4bnROZUZFb2hMcDVUdW9vdVFqNkRlcmxIcDV5QW12UWhNcUFmb0pEeCtKNU4KQVZ6Y1dkQm52T0dBMTRTUURRc29sSmZ5Ci0tLS0tRU5EIFBSSVZBVEUgS0VZLS0tLS0K
+kind: Secret
+metadata:
+  name: tls-secret
+type: kubernetes.io/tls
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: cortex-claim1
+  name: cortex-claim1
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+status: {}
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: cortex-claim2
+  name: cortex-claim2
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+status: {}
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: elasticsearch-claim0
+  name: elasticsearch-claim0
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+status: {}
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: elasticsearch-claim1
+  name: elasticsearch-claim1
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+status: {}
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: thehive-claim1
+  name: thehive-claim1
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+status: {}
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: thehive-claim2
+  name: thehive-claim2
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+status: {}
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: thehive-claim3
+  name: thehive-claim3
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+status: {}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: cortex
+  name: cortex
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: cortex
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        io.kompose.service: cortex
+    spec:
+      containers:
+        - args:
+            - --job-directory
+            - /opt/cortex/jobs
+          env:
+            - name: JOB_DIRECTORY
+              value: /opt/cortex/jobs
+          image: thehiveproject/cortex:latest
+          name: cortex
+          ports:
+            - containerPort: 9001
+          resources: {}
+          volumeMounts:
+            - mountPath: /etc/cortex/application.conf
+              subPath: application.conf
+              name: cortex-application-conf
+            - mountPath: /opt/cortex/jobs
+              name: cortex-claim1
+            - mountPath: /var/run/docker.sock
+              name: dockersock
+      restartPolicy: Always
+      volumes:
+        - name: cortex-application-conf
+          configMap:
+            name: cortex-cm
+        - name: cortex-claim1
+          persistentVolumeClaim:
+            claimName: cortex-claim1
+        - name: dockersock
+          hostPath:
+            path: /var/run/docker.sock
+status: {}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: elasticsearch
+  name: elasticsearch
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: elasticsearch
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        io.kompose.service: elasticsearch
+    spec:
+      containers:
+        - env:
+            - name: ES_JAVA_OPTS
+              value: -Xms256m -Xmx256m
+            - name: bootstrap.memory_lock
+              value: "true"
+            - name: cluster.name
+              value: hive
+            - name: discovery.type
+              value: single-node
+            - name: gateway.recover_after_nodes
+              value: "1"
+            - name: http.host
+              value: 0.0.0.0
+            - name: script.allowed_types
+              value: ' inline'
+            - name: thread_pool.search.queue_size
+              value: "100000"
+            - name: thread_pool.write.queue_size
+              value: "10000"
+            - name: xpack.security.enabled
+              value: "false"
+          image: elasticsearch:7.16.2
+          name: elasticsearch
+          ports:
+            - containerPort: 9200
+          resources: {}
+          volumeMounts:
+            - mountPath: /usr/share/elasticsearch/data
+              name: elasticsearch-claim0
+            - mountPath: /usr/share/elasticsearch/logs
+              name: elasticsearch-claim1
+      restartPolicy: Always
+      volumes:
+        - name: elasticsearch-claim0
+          persistentVolumeClaim:
+            claimName: elasticsearch-claim0
+        - name: elasticsearch-claim1
+          persistentVolumeClaim:
+            claimName: elasticsearch-claim1
+status: {}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: thehive
+  name: thehive
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: thehive
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        io.kompose.network/hp_network: "true"
+        io.kompose.service: thehive
+    spec:
+      containers:
+        - args:
+            - --no-config
+            - --no-config-secret
+          image: thehiveproject/thehive4:latest
+          name: thehive4
+          ports:
+            - containerPort: 9000
+          resources: {}
+          volumeMounts:
+            - mountPath: /etc/thehive/application.conf
+              subPath: application.conf
+              name: thehive-application-conf
+            - mountPath: /opt/thp/thehive/db
+              name: thehive-claim1
+            - mountPath: /opt/thp/thehive/data
+              name: thehive-claim2
+            - mountPath: /opt/thp/thehive/index
+              name: thehive-claim3
+      restartPolicy: Always
+      volumes:
+        - name: thehive-application-conf
+          configMap:
+            name: thehive-cm
+        - name: thehive-claim1
+          persistentVolumeClaim:
+            claimName: thehive-claim1
+        - name: thehive-claim2
+          persistentVolumeClaim:
+            claimName: thehive-claim2
+        - name: thehive-claim3
+          persistentVolumeClaim:
+            claimName: thehive-claim3
+status: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    io.kompose.service: cortex
+  name: cortex
+spec:
+  ports:
+    - name: cortex-svc-9001
+      port: 9001
+      targetPort: 9001
+  selector:
+    io.kompose.service: cortex
+status:
+  loadBalancer: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    io.kompose.service: elasticsearch
+  name: elasticsearch
+spec:
+  ports:
+    - name: elasticsearch-svc-9200
+      port: 9200
+      targetPort: 9200
+  selector:
+    io.kompose.service: elasticsearch
+status:
+  loadBalancer: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    io.kompose.service: thehive
+  name: thehive
+spec:
+  ports:
+    - name: thehive-svc-9000
+      port: 9000
+      targetPort: 9000
+  selector:
+    io.kompose.service: thehive
+status:
+  loadBalancer: {}
+
+---

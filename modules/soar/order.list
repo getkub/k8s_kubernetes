@@ -3,4 +3,4 @@ secret
 pvc
 deploy
 svc
-ingress
+#ingress
