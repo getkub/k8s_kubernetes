@@ -1,0 +1,1 @@
+https://github.com/DoNnMyTh/Eclipse-Theia/raw/main/eclipse-theia.yaml
