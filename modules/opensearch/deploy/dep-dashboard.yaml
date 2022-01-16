@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    service: opensearch-dashboards
+  name: opensearch-dashboards
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: opensearch-dashboards
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        service: opensearch-dashboards
+    spec:
+      containers:
+      - env:
+        - name: OPENSEARCH_HOSTS
+          value: https://opensearch-node1:9200
+        image: opensearchproject/opensearch-dashboards:latest
+        name: opensearch-dashboards
+        ports:
+        - containerPort: 5601
+      restartPolicy: Always

@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    service: opensearch-node1
+  name: opensearch-node1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: opensearch-node1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        service: opensearch-node1
+    spec:
+      containers:
+      - env:
+        - name: OPENSEARCH_JAVA_OPTS
+          value: -Xms512m -Xmx512m
+        - name: bootstrap.memory_lock
+          value: "false"
+        - name: cluster.initial_master_nodes
+          value: opensearch-node1
+        - name: cluster.name
+          value: opensearch-cluster
+        - name: discovery.seed_hosts
+          value: opensearch-node1
+        - name: node.name
+          value: opensearch-node1
+        image: opensearchproject/opensearch:latest
+        name: opensearch-node1
+        ports:
+        - containerPort: 9200
+        - containerPort: 9600
+      restartPolicy: Always
