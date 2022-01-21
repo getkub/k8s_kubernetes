@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: theia-app
+  name: theia-app
+spec:
+  selector:
+    matchLabels:
+      app: theia-app
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: theia-app
+    spec:
+      containers:
+      - image: theiaide/theia:next
+        imagePullPolicy: Always
+        name: theia-app
+        ports:
+        - containerPort: 3000
+---

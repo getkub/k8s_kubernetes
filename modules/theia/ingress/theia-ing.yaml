@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: theia-ingress
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: theia.mydev.test
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: theia-svc
+            port:
+              number: 3000
+---
