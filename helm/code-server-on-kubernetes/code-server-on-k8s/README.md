@@ -6,6 +6,7 @@ helm template . --set user=vsuser --set password=secret --set namespace=${ns} | 
 ```
 
 
+## For Delete
 ```
 ns=vscode
 helm template . --set user=vsuser --set password=secret --set namespace=${ns} | kubectl delete -f -
