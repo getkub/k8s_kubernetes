@@ -17,3 +17,10 @@ helm install \
 kubectl get pods --namespace cert-manager
 
 ```
+
+## Apply the example
+
+## Check
+```
+kubectl describe certificate -n cert-manager-test
+```
