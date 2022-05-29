@@ -31,16 +31,18 @@ docker build \
 ```
 
 ```
-mkdir -p /tmp/k8s_code-server/config
+kport=8070
+kname=k8s_code-server
+mkdir -p /tmp/${kname}/config
 docker run -d \
-  --name=k8s_code-server \
+  --name=${kname} \
   -e PUID=1000 \
   -e PGID=1000 \
   -e TZ=Europe/London \
   -e PASSWORD=secret \
   -e DEFAULT_WORKSPACE=/config/workspace \
-  -p 8443:8443 \
-  -v /tmp/k8s_code-server/config:/config \
+  -p ${kport}:${kport} \
+  -v /tmp/${kname}/config:/config \
   --restart unless-stopped \
   kindocker/code-server:latest
   ```
