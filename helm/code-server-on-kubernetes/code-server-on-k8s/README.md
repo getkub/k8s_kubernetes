@@ -19,3 +19,12 @@ kubectl delete ns $ns
 ## to check
 https://hub.docker.com/r/linuxserver/code-server
 https://github.com/linuxserver/docker-code-server
+
+
+## Build Own
+```
+docker build \
+  --no-cache \
+  --pull \
+  -t kindocker/code-server:latest .
+```
