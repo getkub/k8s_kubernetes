@@ -1,0 +1,18 @@
+# Default Values
+
+# Kubernetes namespace
+namespace: "code-server"
+
+# Basic Authentication Username
+user: "user"
+# Basic Authentication Password
+password: "secret"
+
+# IP whitelist
+loadBalancerSourceRanges: [] 
+
+# Ingress Hostname
+host: code-server.dev
+
+## Overriden port
+port: 8443
