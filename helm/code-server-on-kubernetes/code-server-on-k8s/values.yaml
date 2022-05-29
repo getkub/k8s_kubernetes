@@ -13,3 +13,6 @@ loadBalancerSourceRanges: []
 
 # Ingress Hostname
 host: code-server.dev
+
+## Overriden port
+port: 8070

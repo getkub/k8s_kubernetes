@@ -9,7 +9,7 @@ spec:
     app: code-server-{{ .Values.user }}
   ports:
   - protocol: TCP
-    port: 8080
+    port: {{ .Values.port }}
     targetPort: code-server
     name: code-server-{{ .Values.user }}
 
