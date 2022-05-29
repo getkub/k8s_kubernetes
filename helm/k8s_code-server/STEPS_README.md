@@ -1,10 +1,11 @@
 ## Run vscode
 ```
 ns=vscode
+kport=8070
 kubectl create ns $ns
 helm template . --set user=vsuser --set password=secret --set namespace=${ns} | kubectl apply -f -
-
-kubectl -n vscode port-forward service/code-server-vsuser 8443:8443
+kubectl -n $ns get pods, svc
+kubectl -n $ns port-forward service/code-server-vsuser ${kport}:${kport}
 ```
 
 ## For Delete
