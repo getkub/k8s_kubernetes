@@ -85,7 +85,7 @@ remoteport=3001
 remoteIP="10.110.216.39"
 remoteHost="myServer"
 remoteHostUser="root"
-ssh -L ${localport}:${remoteIP}:${remotePort} ${remoteHostUser}:${remoteHost}
+ssh -L ${localport}:${remoteIP}:${remotePort} ${remoteHostUser}@${remoteHost}
 ```
 
 ```
