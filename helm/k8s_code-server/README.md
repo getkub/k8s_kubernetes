@@ -1,22 +1,54 @@
-# code-server on Kubernetes
-
-code-server is VS Code running on a remote server, accessible through the browser. https://github.com/cdr/code-server
-This is a FULL image with Ansible baked in for development prowness
-
-Authentication default password is `P@ssw0rd`.
-You can overwrite password by environment variables.(`PASSWORD`)
-
-## How to use `code-server-on-kubernetes` image?
-
-### local
-This script pulls the image and runs Theia IDE on https://localhost:8443 with the current directory as a workspace.
+## Run vscode
 ```
-docker run -it -p 127.0.0.1:8080:8080 -v "$PWD:/home/coderi/project" -u "$(id -u):$(id -g)" kindocker/code-server:latest
+ns=vscode
+kport=8070
+kubectl create ns $ns
+helm template . --set user=vsuser --set password=secret --set namespace=${ns} | kubectl apply -f -
+kubectl -n $ns get pods,svc
+kubectl -n $ns port-forward service/code-server-vsuser ${kport}:${kport}
 ```
 
-### k8s cluster
+## Access
+```
+http://localhost:8070
+```
 
-Apply Helm Chart!
+
+## For Delete
 ```
-helm template . --set user=dev --set password=secret --set namespace=vscode | kubectl apply -f -
+ns=vscode
+helm template . --set user=vsuser --set password=secret --set namespace=${ns} | kubectl delete -f -
+kubectl delete ns $ns
 ```
+
+
+
+## to check
+https://hub.docker.com/r/linuxserver/code-server
+https://github.com/linuxserver/docker-code-server
+
+
+## Build Own
+```
+docker build \
+  --no-cache \
+  --pull \
+  -t kindocker/code-server:latest .
+```
+
+```
+kport=8070
+kname=k8s_code-server
+mkdir -p /tmp/${kname}/config
+docker run -d \
+  --name=${kname} \
+  -e PUID=1000 \
+  -e PGID=1000 \
+  -e TZ=Europe/London \
+  -e PASSWORD=secret \
+  -e DEFAULT_WORKSPACE=/config/workspace \
+  -p ${kport}:${kport} \
+  -v /tmp/${kname}/config:/config \
+  --restart unless-stopped \
+  kindocker/code-server:latest
+  ```
