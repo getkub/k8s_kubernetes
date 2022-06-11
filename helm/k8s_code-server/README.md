@@ -25,7 +25,7 @@ kubectl delete ns $ns
 
 
 
-## to check
+## Reference
 - https://hub.docker.com/r/linuxserver/code-server
 - https://github.com/linuxserver/docker-code-server
 
