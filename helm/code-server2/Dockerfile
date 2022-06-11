@@ -7,6 +7,6 @@ RUN sudo apt-get update && sudo apt-get install --no-install-recommends -y \
   libarchive-tools \
   wget && \
   echo "**** install ansible ****" && \
-  apt-get install -y software-properties-common && \
-  add-apt-repository --yes --update ppa:ansible/ansible && \
-  apt-get install -y ansible
+  sudo apt-get install -y software-properties-common && \
+  sudo add-apt-repository --yes --update ppa:ansible/ansible && \
+  sudo apt-get install -y ansible
