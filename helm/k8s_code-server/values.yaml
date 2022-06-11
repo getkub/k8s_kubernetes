@@ -15,4 +15,4 @@ loadBalancerSourceRanges: []
 host: code-server.dev
 
 ## Overriden port
-port: 8070
+port: 8443
