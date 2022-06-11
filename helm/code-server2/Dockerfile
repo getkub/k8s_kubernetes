@@ -6,6 +6,7 @@ RUN apt-get update \
     curl \
     dumb-init \
     zsh \
+    jq \
     htop \
     locales \
     man \
@@ -17,8 +18,12 @@ RUN apt-get update \
     sudo \
     vim.tiny \
     lsb-release \
-  && git lfs install \
-  && rm -rf /var/lib/apt/lists/*
+    && echo "**** install ansible ****"\
+    && apt-get install -y software-properties-common \
+    && add-apt-repository --yes --update ppa:ansible/ansible \
+    && apt-get install -y ansible \
+    && git lfs install \
+    && rm -rf /var/lib/apt/lists/*
 
 # https://wiki.debian.org/Locale#Manually
 RUN sed -i "s/# en_US.UTF-8/en_US.UTF-8/" /etc/locale.gen \
