@@ -24,17 +24,26 @@ then
     exit 0
 fi
 
+ips=($(hostname -I))
+echo "IP of the host => " $ips
+mylan=`echo ${ips[0]}`
+mylan_range=`echo $mylan| awk -F'.' '{print $1"."$2"."$3".0"}'`
+
 if [ "$2" == "apply" ]
 then
-    ips=($(hostname -I))
-    echo "IP of the host => " $ips
-    mylan=`echo ${ips[0]}`
-    mylan_range=`echo $mylan| awk -F'.' '{print $1"."$2"."$3".0"}'`
     iptables -I INPUT -s ${mylan_range}/24 -p tcp --dport ${dport} -j ACCEPT
+elif [ "$2" == "delete" ]
+then
+   ruleList=`iptables -L -v -n --line-numbers| grep $dport | grep ${mylan_range}| cut -d' ' -f1`
+   for iprule in $ruleList
+   do 
+    echo "Entry line $iprule to be deleted.."
+    iptables -D INPUT $iprule 
+   done
+fi
 
-    if [ "$3" == "perm" ]
-    then
-        echo "Making port Permanently enabled"
-        iptables-save >/etc/iptables/rules.v4
-    fi
+if [ "$3" == "perm" ]
+then
+    echo "Making port Permanently enabled"
+    iptables-save >/etc/iptables/rules.v4
 fi
