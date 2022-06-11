@@ -7,6 +7,8 @@ helm template . --set user=vsuser --set password=secret --set namespace=${ns} | 
 kubectl -n $ns get pods,svc
 kubectl -n $ns port-forward service/code-server-vsuser ${kport}:${kport}
 ```
+- Please note, the port has been overriden to `8070` as the default port is commonly used.
+- If needs changing please change in `values.yaml`
 
 ## Access
 ```
