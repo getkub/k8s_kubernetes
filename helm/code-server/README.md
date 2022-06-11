@@ -1,4 +1,5 @@
 - https://coder.com/docs/code-server/latest/helm
+- https://docs.microsoft.com/en-us/azure/developer/ansible/configure-in-docker-container?tabs=azure-cli
 
 ## Install
 ```
