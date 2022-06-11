@@ -17,5 +17,8 @@ helm delete code-server
 
 ## Docker - For testing
 ```
-docker run -d -p 8080:8080 kindocker/code-server2:latest
+docker stop cs2
+docker rm $(docker ps -a -f status=exited -q)
+docker run --name cs2 -d -it -p 127.0.0.1:8080:8080 kindocker/code-server2:latest
+
 ```
