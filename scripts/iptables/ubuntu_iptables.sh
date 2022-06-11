@@ -20,7 +20,7 @@ persistent="$3"
 if [ "$2" == "list" ]
 then
     echo "Listing Any rules with port $dport .."
-    iptables -L -v -n | grep $dport
+    iptables -L -v -n --line-numbers| grep $dport
     exit 0
 fi
 
