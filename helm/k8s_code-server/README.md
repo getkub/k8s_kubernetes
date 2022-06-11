@@ -10,7 +10,7 @@ kubectl -n $ns port-forward service/code-server-vsuser ${kport}:${kport}
 
 ## Access
 ```
-http://localhost:8070
+http://your_k8s_service_ip:8070
 ```
 
 
