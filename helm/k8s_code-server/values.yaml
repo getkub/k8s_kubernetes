@@ -1,7 +1,10 @@
 # Default Values
 
 # Kubernetes namespace
-namespace: "code-server"
+namespace: "vscode"
+repository: 
+  name: "kindocker/k8s_code-server"
+  version: "latest"
 
 # Basic Authentication Username
 user: "user"
