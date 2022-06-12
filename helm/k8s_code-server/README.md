@@ -1,3 +1,10 @@
+Complete Container with Ansible & Python with VSCode
+
+## About this Project
+code-server is VS Code running on a remote server, accessible through the browser.
+This is a FULL image on Ubuntu with Ansible & Python3 baked in for development prowness
+Original Project - https://github.com/cdr/code-server
+
 ## Run vscode
 ```
 ns=vscode
@@ -29,12 +36,6 @@ kubectl delete ns $ns
 
 
 ## Build Own
-```
-docker build \
-  --no-cache \
-  --pull \
-  -t kindocker/code-server:latest .
-```
 
 ```
 kport=8443
@@ -50,5 +51,5 @@ docker run -d \
   -p ${kport}:${kport} \
   -v /tmp/${kname}/config:/config \
   --restart unless-stopped \
-  kindocker/code-server:latest
+  kindocker/k8s_code-server:latest
   ```
