@@ -15,7 +15,7 @@ password: "secret"
 loadBalancerSourceRanges: [] 
 
 # Ingress Hostname
-host: code-server.dev
+host_domain: svc1.server.test
 
 ## Overriden port
 port: 8443
