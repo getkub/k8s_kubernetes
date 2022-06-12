@@ -7,6 +7,14 @@ metadata:
     cert-manager.io/cluster-issuer: letsencrypt-prod
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.org/websocket-services: code-server-{{ .Values.user }}
+    nginx.org/server-snippets: |
+      location / {
+      proxy_pass http://{{ .Values.host_domain }}:{{ .Values.port }}/;
+      proxy_set_header Host $host;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection upgrade;
+      proxy_set_header Accept-Encoding gzip;
+      }   
 spec:
   tls:
   - hosts:
