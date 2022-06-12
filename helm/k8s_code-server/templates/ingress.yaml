@@ -5,12 +5,13 @@ metadata:
   namespace:  {{ .Values.namespace }}
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.org/websocket-services: code-server-{{ .Values.user }}
 spec:
-  ingressClassName: nginx
   tls:
   - hosts:
     - {{ .Values.host_domain }}
-    secretName: code-server--secret-{{ .Values.user }}
+    secretName: code-server-secret-{{ .Values.user }}
   rules:
   - host: {{ .Values.host_domain }}
     http:
