@@ -4,7 +4,7 @@ metadata:
   name: code-server-{{ .Values.user }}
   namespace:  {{ .Values.namespace }}
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
+    cert-manager.io/cluster-issuer: letsencrypt-staging
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.org/websocket-services: code-server-{{ .Values.user }}
     nginx.org/server-snippets: |
