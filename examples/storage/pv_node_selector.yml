@@ -1,0 +1,30 @@
+### This needs fixing
+
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+name: pv-10tb-0-mybox
+labels:
+    disk-type: ssd-nvme-10tb
+    enc-at-rest: yes
+    usage: es-data-node
+    storage-group: A
+    location: SITE_A
+spec:
+    capacity:
+        storage: 10000Gi
+        local:
+            path: "/pv-10tb-0"
+        accessModes:
+        - ReadWriteOnce
+    persistentVolumeReclaimPolicy: Retain
+    storageClassName: standard-storage-ssd
+    volumeMode: Filesystem
+    nodeAffinity:
+        required:
+            nodeSelectorTerms:
+                - matchExpressions:
+                - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                    - mybox
