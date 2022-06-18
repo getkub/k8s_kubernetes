@@ -16,8 +16,8 @@ kubectl -n $ns get secret splunk-${ns}-secret -o=jsonpath='{.data.password}'| ba
 
 ## Below fails for time being
 newpass="someComplexpass"
-newpass_encoded=`echo -n $newpass | base64` # c29tZUNvbXBsZXhwYXNz
-kubectl -n $ns patch secret splunk-${ns}-secret -p='{"data":{"password": "c29tZUNvbXBsZXhwYXNz" }}' -v=2
+newpass_encoded=`echo -n $newpass | base64`
+kubectl -n $ns patch secret splunk-${ns}-secret -p='{"data":{"password": "'$newpass_encoded'" }}' -v=2
 ```
 
 
