@@ -12,6 +12,12 @@ kubectl -n $ns port-forward service/splunk-single-standalone-service 8000:8000
 ns=splunk
 # kubectl -n $ns get secret splunk-${ns}-secret -o yaml
 kubectl -n $ns get secret splunk-${ns}-secret -o=jsonpath='{.data.password}'| base64 --decode; echo
+
+
+## Below fails for time being
+newpass="someComplexpass"
+newpass_encoded=`echo -n $newpass | base64` # c29tZUNvbXBsZXhwYXNz
+kubectl -n $ns patch secret splunk-${ns}-secret -p='{"data":{"password": "c29tZUNvbXBsZXhwYXNz" }}' -v=2
 ```
 
 
