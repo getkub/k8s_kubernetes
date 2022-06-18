@@ -1,0 +1,36 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: "elk"
+
+---
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: quickstart
+  namespace: elk
+spec:
+  version: 8.2.3
+  nodeSets:
+  - name: data
+    count: 2
+    config:
+      node.store.allow_mmap: false
+    podTemplate:
+      spec:
+        volumes:
+        - name: elasticsearch-data
+          emptyDir: {}
+---
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: quickstart
+  namespace: elk
+spec:
+  version: 8.2.3
+  count: 1
+  elasticsearchRef:
+    name: quickstart
+---
