@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   name: echo-ingress
   annotations:
-    ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
   - host: mydev.test
