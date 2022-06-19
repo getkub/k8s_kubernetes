@@ -1,13 +1,11 @@
+## Sample CA for kubernetes testing
+- https://github.com/cert-manager/cert-manager/issues/279
+
+The helper script will 
+- Generate key
+- Generate crt for macos
+- Load the CRT with relevant properties to `certs` namespace of k8s
+
 ```
-# macos
-cp /etc/ssl/openssl.cnf /tmp/openssl-with-ca.cnf
-echo '
-[ v3_ca ]
-basicConstraints = critical,CA:TRUE
-subjectKeyIdentifier = hash
-authorityKeyIdentifier = keyid:always,issuer:always' >> /tmp/openssl-with-ca.cnf
-
-## The seed file is in helpers
-openssl req -x509 -new -nodes -key tls.key -sha256 -days 1024 -out tls.crt -extensions v3_ca -config /tmp/openssl-with-ca.cnf
-
+sh ./gen_cert.sh
 ```
