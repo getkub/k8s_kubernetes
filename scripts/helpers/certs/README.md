@@ -9,3 +9,9 @@ The helper script will
 ```
 sh ./gen_cert.sh
 ```
+
+## To apply to another namespace
+```
+ns=something
+kubectl -n $ns apply -f tls-secret.yml
+```

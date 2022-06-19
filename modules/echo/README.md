@@ -5,7 +5,7 @@
 ns="something"
 # Ensure tls-secret is loaded into same namespace
 kubectl -n $ns apply -f echo_app.yml
-kubectl -n $ns apply -f ../k8s-learn/secret/tls-secret.yaml
+kubectl -n $ns apply -f ../../scripts/helpers/certs/tls-secret.yaml
 kubectl -n $ns apply -f echo_ingress.yml
 
 ```

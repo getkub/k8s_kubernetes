@@ -6,8 +6,9 @@
 ```
 ns=cert-manager-test
 # Apply tls-secret beforehand
-kubectl -n $ns apply -f ../k8s-learn/secret/tls-secret.yaml
+kubectl -n $ns apply -f ../../../scripts/helpers/certs/tls-secret.yml
 kubectl apply -f ca_cert.yml
+kubectl -n $ns get issuers ca-issuer  -o wide
 
 ```
 
