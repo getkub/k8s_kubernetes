@@ -1,5 +1,6 @@
 ## Sample CA for kubernetes testing
 - https://github.com/cert-manager/cert-manager/issues/279
+- https://stackoverflow.com/questions/7580508/getting-chrome-to-accept-self-signed-localhost-certificate
 
 The helper script will 
 - Generate key
