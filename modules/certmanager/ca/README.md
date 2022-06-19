@@ -12,4 +12,9 @@ kubectl -n $ns get issuers ca-issuer  -o wide
 
 ```
 
-- 
+- Run the `echo` application
+
+- Apply Ingress
+```
+kubectl apply -f echo_ingress.yml
+```
