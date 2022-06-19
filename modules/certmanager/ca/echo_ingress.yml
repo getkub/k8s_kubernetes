@@ -10,7 +10,7 @@ spec:
   tls:
     - hosts:
       - mydev2.test
-      secretName: tls-secret
+      secretName: myingress-cert
   rules:
   - host: mydev2.test
     http:
