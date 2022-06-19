@@ -9,3 +9,14 @@ metadata:
   namespace: cert-manager-test
 type: kubernetes.io/tls
 ---
+
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: ca-issuer
+  namespace: cert-manager-test
+spec:
+  ca:
+    secretName: tls-secret
+---
+
