@@ -1,1 +1,1 @@
-## Scripts to generate for k8s
+## Wrapper Scripts to help generate k8s configs
