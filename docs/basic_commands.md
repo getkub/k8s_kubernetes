@@ -31,3 +31,11 @@ do
   kubectl get pods
 done
 ```
+
+### K8s commands - v2
+```
+# Logging to pod with multiple containers
+container_name="logstash"
+kubectl -n $ns exec -it $mypod -c $container_name -- /bin/bash
+
+```
