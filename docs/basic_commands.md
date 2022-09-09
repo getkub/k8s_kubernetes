@@ -14,6 +14,9 @@ kubectl get pods -n ${ns}
 kubectl get pods --all-namespaces
 kubectl get pod ${podname} -n ${ns} -o yaml
 kubectl describe node  $nodename
+
+# Get pod name ONLY
+kubectl get pods --no-headers -o custom-columns=":metadata.name"
 ```
 
 ### Scale within deployment
