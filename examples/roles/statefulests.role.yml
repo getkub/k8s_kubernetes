@@ -1,0 +1,30 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: myrole1
+  namespace: myns
+rules:
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["list", "get", "update", "patch", "create", "delete"]
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["list", "get", "delete"]
+- apiGroups: ["apps"]
+  resources: ["statefulsets"]
+  verbs: ["list", "get", "update", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: myrole-10-binding
+  namespace: myns
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: myrole-10
+subjects:
+- kind: ServiceAccount
+  name: ns-myorig-prod
+  namespace: ns-myorig
