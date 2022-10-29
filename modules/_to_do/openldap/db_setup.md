@@ -28,13 +28,13 @@ echo "$(kubectl get secret openldap -n $ns -o json | jq -r .data.passwords | bas
 
 
 ## These happen in default namespace
-kubectl get pods
+kubectl -n db get pods
 maria_image="docker.io/bitnami/mariadb-galera:10.6.10-debian-11-r11"
 maria_pod="mariadb-galera-client"
-kubectl run $maria_pod --rm --tty -i --restart='Never' -n db --image $maria_image
-kubectl exec -it $maria_pod -- bash
+kubectl -n db run $maria_pod --rm --tty -i --restart='Never' -n db --image $maria_image
+kubectl -n db exec -it $maria_pod -- bash
 # mysql -h my-release-mariadb-galera -u user01 -ppassword01 my_database
-kubectl logs $maria_pod
+kubectl -n db logs $maria_pod
 
 ```
 
