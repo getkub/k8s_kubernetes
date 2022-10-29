@@ -31,7 +31,7 @@ echo "$(kubectl get secret openldap -n $ns -o json | jq -r .data.passwords | bas
 kubectl get pods
 maria_image="docker.io/bitnami/mariadb-galera:10.6.10-debian-11-r11"
 maria_pod="mariadb-galera-client"
-kubectl run $maria_pod --rm --tty -i --restart='Never' --namespace default --image $maria_image
+kubectl run $maria_pod --rm --tty -i --restart='Never' -n db --image $maria_image
 kubectl exec -it $maria_pod -- bash
 # mysql -h my-release-mariadb-galera -u user01 -ppassword01 my_database
 kubectl logs $maria_pod
