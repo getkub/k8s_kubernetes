@@ -29,7 +29,7 @@ echo "$(kubectl get secret openldap -n $ns -o json | jq -r .data.passwords | bas
 
 ## These happen in default namespace
 kubectl get pods
-maria_image="docker.io/bitnami/mariadb-galera:10.6.4-debian-10-r30"
+maria_image="docker.io/bitnami/mariadb-galera:10.6.10-debian-11-r11"
 maria_pod="mariadb-galera-client"
 kubectl run $maria_pod --rm --tty -i --restart='Never' --namespace default --image $maria_image
 kubectl exec -it $maria_pod -- bash
