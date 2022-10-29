@@ -12,7 +12,7 @@ helm install my-release bitnami/mariadb-galera
 
 ```
 helm install -f values.yaml my-release demo/mariadb-galera
-kubectl get sts -l app.kubernetes.io/instance=my-release -w
+kubectl get sts -l app.kubernetes.io/instance=my-release
 kubectl get service
 
 ```
