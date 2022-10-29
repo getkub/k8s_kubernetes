@@ -26,14 +26,21 @@ echo "$(kubectl get secret openldap -n $ns -o json | jq -r .data.passwords | bas
 
 ## These happen in default namespace
 kubectl get pods
-kubectl run mariadb-galera-client --rm --tty -i --restart='Never' --namespace default --image gcr.io/sys-2b0109it/demo/bitnami/mariadb-galera:10.4.13-centos-7-r20 --command -- bash
+maria_image="docker.io/bitnami/mariadb-galera:10.6.4-debian-10-r30"
+maria_pod="mariadb-galera-client"
+kubectl run $maria_pod --rm --tty -i --restart='Never' --namespace default --image $maria_image
+kubectl exec -it $maria_pod -- bash
 # mysql -h my-release-mariadb-galera -u user01 -ppassword01 my_database
-kubectl logs OPENLDAP-POD-NAME
+kubectl logs $maria_pod
 
 ```
 
 
 ```
+kubectl get pods
+maria_image="docker.io/bitnami/mariadb-galera:10.6.4-debian-10-r30"
+maria_pod2="release-mariadb-galera"
+
   Watch the deployment status using the command:
 
     kubectl get sts -w --namespace default -l app.kubernetes.io/instance=my-release
@@ -48,13 +55,13 @@ To obtain the password for the MariaDB admin user run the following command:
 
 To connect to your database run the following command:
 
-    kubectl run my-release-mariadb-galera-client --rm --tty -i --restart='Never' --namespace default --image docker.io/bitnami/mariadb-galera:10.6.4-debian-10-r30 --command \
-      -- mysql -h my-release-mariadb-galera -P 3306 -uroot -p$(kubectl get secret --namespace default my-release-mariadb-galera -o jsonpath="{.data.mariadb-root-password}" | base64 --decode) my_database
+    kubectl run my-release-mariadb-galera-client --rm --tty -i --restart='Never' --namespace default --image $maria_image 
+    kubectl exec my-${maria_pod2}-client -- mysql -h my-${maria_pod2} -P 3306 -uroot -p$(kubectl get secret --namespace default my-${maria_pod2} -o jsonpath="{.data.mariadb-root-password}" | base64 --decode) my_database
 
 To connect to your database from outside the cluster execute the following commands:
 
-    kubectl port-forward --namespace default svc/my-release-mariadb-galera 3306:3306 &
-    mysql -h 127.0.0.1 -P 3306 -uroot -p$(kubectl get secret --namespace default my-release-mariadb-galera -o jsonpath="{.data.mariadb-root-password}" | base64 --decode) my_database
+    kubectl port-forward --namespace default svc/my-${maria_pod2} 3306:3306 &
+    mysql -h 127.0.0.1 -P 3306 -uroot -p$(kubectl get secret --namespace default my-${maria_pod2} -o jsonpath="{.data.mariadb-root-password}" | base64 --decode) my_database
 
 To upgrade this helm chart:
 
