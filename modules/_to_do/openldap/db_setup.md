@@ -3,7 +3,9 @@ https://docs.bitnami.com/tutorials/create-openldap-server-kubernetes/
 ```
 # helm search repo -l demo/mariadb-galera
 helm repo add bitnami https://charts.bitnami.com/bitnami
-helm install my-release bitnami/mariadb-galera
+
+Don't do below, but download the values.yml and edit it
+#helm install my-release bitnami/mariadb-galera
 
 ```
 
@@ -11,9 +13,10 @@ helm install my-release bitnami/mariadb-galera
 
 
 ```
-helm install -f values.yaml my-release demo/mariadb-galera
-kubectl get sts -l app.kubernetes.io/instance=my-release
-kubectl get service
+kubectl create ns db
+helm install -f mariadb_values.yml -n db my-release bitnami/mariadb-galera
+kubectl -n db get sts -l app.kubernetes.io/instance=my-release
+kubectl -n db get service
 
 ```
 
@@ -37,13 +40,13 @@ kubectl logs $maria_pod
 
 
 ```
-kubectl get pods
-maria_image="docker.io/bitnami/mariadb-galera:10.6.4-debian-10-r30"
+kubectl -n db get pods
+maria_image="docker.io/bitnami/mariadb-galera:10.6.10-debian-11-r11"
 maria_pod2="release-mariadb-galera"
 
   Watch the deployment status using the command:
 
-    kubectl get sts -w --namespace default -l app.kubernetes.io/instance=my-release
+    kubectl -n db get sts -w --namespace default -l app.kubernetes.io/instance=my-release
 
 MariaDB can be accessed via port "3306" on the following DNS name from within your cluster:
 
@@ -51,22 +54,22 @@ MariaDB can be accessed via port "3306" on the following DNS name from within yo
 
 To obtain the password for the MariaDB admin user run the following command:
 
-    echo "$(kubectl get secret --namespace default my-release-mariadb-galera -o jsonpath="{.data.mariadb-root-password}" | base64 --decode)"
+    echo "$(kubectl get secret --n db my-release-mariadb-galera -o jsonpath="{.data.mariadb-root-password}" | base64 --decode)"
 
 To connect to your database run the following command:
 
-    kubectl run my-release-mariadb-galera-client --rm --tty -i --restart='Never' --namespace default --image $maria_image 
-    kubectl exec my-${maria_pod2}-client -- mysql -h my-${maria_pod2} -P 3306 -uroot -p$(kubectl get secret --namespace default my-${maria_pod2} -o jsonpath="{.data.mariadb-root-password}" | base64 --decode) my_database
+    kubectl -n db run my-release-mariadb-galera-client --rm --tty -i --restart='Never' --namespace default --image $maria_image 
+    kubectl -n db exec my-${maria_pod2}-client -- mysql -h my-${maria_pod2} -P 3306 -uroot -p$(kubectl get secret -n db my-${maria_pod2} -o jsonpath="{.data.mariadb-root-password}" | base64 --decode) my_database
 
 To connect to your database from outside the cluster execute the following commands:
 
-    kubectl port-forward --namespace default svc/my-${maria_pod2} 3306:3306 &
-    mysql -h 127.0.0.1 -P 3306 -uroot -p$(kubectl get secret --namespace default my-${maria_pod2} -o jsonpath="{.data.mariadb-root-password}" | base64 --decode) my_database
+    kubectl port-forward -n db svc/my-${maria_pod2} 3306:3306 &
+    mysql -h 127.0.0.1 -P 3306 -uroot -p$(kubectl get secret -n db my-${maria_pod2} -o jsonpath="{.data.mariadb-root-password}" | base64 --decode) my_database
 
 To upgrade this helm chart:
 
-    helm upgrade --namespace default my-release bitnami/mariadb-galera \
-      --set rootUser.password=$(kubectl get secret --namespace default my-release-mariadb-galera -o jsonpath="{.data.mariadb-root-password}" | base64 --decode) \
+    helm upgrade -n db my-release bitnami/mariadb-galera \
+      --set rootUser.password=$(kubectl get secret -n db my-release-mariadb-galera -o jsonpath="{.data.mariadb-root-password}" | base64 --decode) \
       --set db.name=my_database \
-      --set galera.mariabackup.password=$(kubectl get secret --namespace default my-release-mariadb-galera -o jsonpath="{.data.mariadb-galera-mariabackup-password}" | base64 --decode)
+      --set galera.mariabackup.password=$(kubectl get secret -n db my-release-mariadb-galera -o jsonpath="{.data.mariadb-galera-mariabackup-password}" | base64 --decode)
       ```
