@@ -348,12 +348,12 @@ containerSecurityContext:
 rootUser:
   ## @param rootUser.user Username for the admin user.
   ##
-  user: root
+  user: rootpass
   ## @param rootUser.password Password for the admin user. Ignored if existing secret is provided.
   ## Password is ignored if existingSecret is specified.
   ## ref: https://github.com/bitnami/containers/tree/main/bitnami/mariadb-galera#setting-the-root-password-on-first-run
   ##
-  password: ""
+  password: "root"
   ## @param rootUser.forcePassword Option to force users to specify a password. That is required for 'helm upgrade' to work properly.
   ## If it is not force, a random password will be generated.
   ##
@@ -1827,3 +1827,4 @@ metrics:
     ##    for: 5m
     ##
     rules: {}
+
