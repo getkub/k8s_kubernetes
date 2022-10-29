@@ -1,5 +1,5 @@
 ## Fairly automated 
-Check for [k8s_dashboard](../modules/k8s_dashboard) module
+Check for [k8s_dashboard](../modules/k3s_dashboard) module
 ```
 kubectl proxy &
 ```
@@ -28,6 +28,7 @@ kubectl proxy --address='0.0.0.0' --port=8001 --accept-hosts='.*' &
 ### Tokens (will take some time)
 https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md
 #https://github.com/kubernetes/dashboard/issues/4179
+kubectl create secret generic admin-user --from-literal=admin_user=admin_pass --namespace kubernetes-dashboard 
 kubectl -n kubernetes-dashboard get secret
 
 kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboard get secret | grep admin-user | awk '{print $1}')
@@ -56,8 +57,9 @@ export K8S_NS=kubernetes-dashboard
 
 ### Export Variables
 ```
-export USER_TOKEN_NAME=$(kubectl -n ${K8S_NS} get serviceaccount ${K8S_DB_USER} -o=jsonpath='{.secrets[0].name}')
-export USER_TOKEN_VALUE=$(kubectl -n ${K8S_NS} get secret/${USER_TOKEN_NAME} -o=go-template='{{.data.token}}' | base64 --decode)
+# export USER_TOKEN_NAME=$(kubectl -n ${K8S_NS} get serviceaccount ${K8S_DB_USER} -o=jsonpath='{.secrets[0].name}')
+# export USER_TOKEN_VALUE=$(kubectl -n ${K8S_NS} get secret/${USER_TOKEN_NAME} -o=go-template='{{.data.token}}' | base64 --decode)
+export USER_TOKEN_VALUE=$(kubectl -n ${K8S_NS} create token ${K8S_DB_USER})
 export CURRENT_CONTEXT=$(kubectl config current-context)
 export CURRENT_CLUSTER=$(kubectl config view --raw -o=go-template='{{range .contexts}}{{if eq .name "'''${CURRENT_CONTEXT}'''"}}{{ index .context "cluster" }}{{end}}{{end}}')
 export CLUSTER_CA=$(kubectl config view --raw --minify --flatten -o jsonpath='{.clusters[].cluster.certificate-authority-data}')
