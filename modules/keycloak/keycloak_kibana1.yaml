@@ -20,8 +20,8 @@ spec:
             order: 1
     server.ssl.supportedProtocols: [TLSv1.2,TLSv1.3]
     server.ssl.cipherSuites: [DEFAULT:!SHA1:!SHA256:!SHA384]
-    xpack.security.session.idleTimeout: "1h"
-    xpack.security.session.lifespan: "8h"
+    xpack.security.session.idleTimeout: "2h"
+    xpack.security.session.lifespan: "24h"
     server.xsrf.whitelist: [/api/security/v1/oidc]
     elasticsearch.ssl.certificateAuthorities: /usr/share/kibana/config/elasticsearch-certs/ca.crt
   version: 7.15.0
