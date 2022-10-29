@@ -8,7 +8,7 @@ Don't do below, but download the values.yml and edit it
 #helm install my-release bitnami/mariadb-galera
 helm uninstall -n db my-release
 kubectl -n db get pvc # and cleanup pvc
-kubectl -n db delete pvc data-my-release-mariadb-galera-0 data-my-release-mariadb-galera-1 data-my-release-mariadb-galera-2
+kubectl -n db delete pvc data-my-release-mariadb-galera-0
 ```
 
 ** Amend values :  values.yaml **

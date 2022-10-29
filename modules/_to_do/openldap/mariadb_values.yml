@@ -441,8 +441,8 @@ galera:
 ldap:
   enabled: true
   uri: "ldap://openldap.ldap.svc.cluster.local:1389"
-  base: "dc=df,dc=org"
-  binddn: "cn=admin,dc=df,dc=org"
+  base: "dc=example,dc=org"
+  binddn: "cn=admin,dc=example,dc=org"
   bindpw: "adminpassword"
   bslookup: ""
   filter: ""
@@ -1153,7 +1153,7 @@ db:
   ## @param db.user Username of new user to create
   ## ref: https://github.com/bitnami/containers/tree/main/bitnami/mariadb-galera#creating-a-database-user-on-first-run
   ##
-  user: ""
+  user: "user01"
   ## @param db.password Password for the new user. Ignored if existing secret is provided.
   ##
   password: ""
@@ -1213,11 +1213,11 @@ galera:
 ## @param ldap.tls_reqcert LDAP TLS check on server certificates
 ##
 ldap:
-  enabled: false
-  uri: ""
-  base: ""
-  binddn: ""
-  bindpw: ""
+  enabled: true
+  uri: "ldap://openldap.ldap.svc.cluster.local:1389"
+  base: "dc=example,dc=org"
+  binddn: "cn=admin,dc=example,dc=org"
+  bindpw: "adminpassword"
   bslookup: ""
   filter: ""
   map: ""
