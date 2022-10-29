@@ -23,26 +23,29 @@ kubectl -n db get service
 
 ### Test connections
 ```
-ns="ldap"
-echo "$(kubectl get secret openldap -n $ns -o json | jq -r .data.users | base64 --decode)"
-echo "$(kubectl get secret openldap -n $ns -o json | jq -r .data.passwords | base64 --decode)"
+ns_ldap="ldap"
+echo "$(kubectl get secret openldap -n $ns_ldap -o json | jq -r .data.users | base64 --decode)"
+echo "$(kubectl get secret openldap -n $ns_ldap -o json | jq -r .data.passwords | base64 --decode)"
+```
+
+```
+kubectl -n db get pods
+maria_pod="release-mariadb-galera"
+kubectl -n db exec my-${maria_pod}-0 -it -- bash
+mysql -h my-release-mariadb-galera --user=user01 --password=password01 my_database
+
+```
 
 
-## These happen in default namespace
+```
+## In case of a separate DB
 kubectl -n db get pods
 maria_image="docker.io/bitnami/mariadb-galera:10.6.10-debian-11-r11"
 maria_pod="release-mariadb-galera"
 kubectl -n db run $maria_pod --rm -it --image $maria_image --env ALLOW_EMPTY_PASSWORD=yes -- bash
 # Wait for few minutes
 
-kubectl -n db exec -it $maria_pod -- bash
-# mysql -h my-release-mariadb-galera -u user01 -ppassword01 my_database
-kubectl -n db logs $maria_pod
-
-```
-
-
-```
+## Other commands - NOT tested
 kubectl -n db get pods
 maria_image="docker.io/bitnami/mariadb-galera:10.6.10-debian-11-r11"
 maria_pod="release-mariadb-galera"
