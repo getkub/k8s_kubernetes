@@ -51,7 +51,7 @@ maria_pod="release-mariadb-galera"
 
 MariaDB can be accessed via port "3306" on the following DNS name from within your cluster:
 
-    my-${maria_pod}.default.svc.cluster.local
+    ${maria_pod}.default.svc.cluster.local
 
 To obtain the password for the MariaDB admin user run the following command:
 
@@ -64,8 +64,8 @@ To connect to your database run the following command:
 
 To connect to your database from outside the cluster execute the following commands:
 
-    kubectl port-forward -n db svc/my-${maria_pod2} 3306:3306 &
-    mysql -h 127.0.0.1 -P 3306 -uroot -p$(kubectl get secret -n db my-${maria_pod2} -o jsonpath="{.data.mariadb-root-password}" | base64 --decode) my_database
+    kubectl port-forward -n db svc/my-${maria_pod} 3306:3306 &
+    mysql -h 127.0.0.1 -P 3306 -uroot -p$(kubectl get secret -n db ${maria_pod} -o jsonpath="{.data.mariadb-root-password}" | base64 --decode) my_database
 
 To upgrade this helm chart:
 
