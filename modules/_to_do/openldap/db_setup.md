@@ -45,7 +45,7 @@ maria_pod2="release-mariadb-galera"
 
   Watch the deployment status using the command:
 
-    kubectl -n db get sts -w --namespace default -l app.kubernetes.io/instance=my-release
+    kubectl -n db get sts -w -n db -l app.kubernetes.io/instance=my-release
 
 MariaDB can be accessed via port "3306" on the following DNS name from within your cluster:
 
@@ -53,11 +53,11 @@ MariaDB can be accessed via port "3306" on the following DNS name from within yo
 
 To obtain the password for the MariaDB admin user run the following command:
 
-    echo "$(kubectl get secret --n db my-release-mariadb-galera -o jsonpath="{.data.mariadb-root-password}" | base64 --decode)"
+    echo "$(kubectl get secret -n db my-release-mariadb-galera -o jsonpath="{.data.mariadb-root-password}" | base64 --decode)"
 
 To connect to your database run the following command:
 
-    kubectl -n db run my-release-mariadb-galera-client --rm --tty -i --restart='Never' --namespace default --image $maria_image 
+    kubectl -n db run my-release-mariadb-galera-client --rm --tty -i --restart='Never' -n db --image $maria_image 
     kubectl -n db exec my-${maria_pod2}-client -- mysql -h my-${maria_pod2} -P 3306 -uroot -p$(kubectl get secret -n db my-${maria_pod2} -o jsonpath="{.data.mariadb-root-password}" | base64 --decode) my_database
 
 To connect to your database from outside the cluster execute the following commands:
