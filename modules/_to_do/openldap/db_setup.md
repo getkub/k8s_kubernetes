@@ -7,6 +7,8 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 Don't do below, but download the values.yml and edit it
 #helm install my-release bitnami/mariadb-galera
 helm uninstall -n db my-release
+kubectl -n db get pvc # and cleanup pvc
+kubectl -n db delete pvc data-my-release-mariadb-galera-0 data-my-release-mariadb-galera-1 data-my-release-mariadb-galera-2
 ```
 
 ** Amend values :  values.yaml **
