@@ -11,7 +11,7 @@ metadata:
   name: quickstart
   namespace: elk
 spec:
-  version: 8.2.3
+  version: 8.5.0
   nodeSets:
   - name: default
     count: 2
@@ -34,7 +34,7 @@ metadata:
   name: quickstart
   namespace: elk
 spec:
-  version: 8.2.3
+  version: 8.5.0
   count: 1
   elasticsearchRef:
     name: quickstart
