@@ -1,10 +1,4 @@
 ---
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: "elk"
-
----
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
