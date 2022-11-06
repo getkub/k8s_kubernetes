@@ -59,7 +59,7 @@ export K8S_NS=kubernetes-dashboard
 
 ### Export Variables
 ```
-export USER_TOKEN_VALUE=$(kubectl -n ${K8S_NS} create token ${K8S_DB_USER} --duration=8760h )
+export USER_TOKEN_VALUE=$(kubectl -n ${K8S_NS} create token ${K8S_DB_USER} --duration=8760h --token-ttl=43200)
 export USER_TOKEN_NAME=$(kubectl -n ${K8S_NS} get serviceaccount ${K8S_DB_USER} --template='{{.metadata.name}}')
 # export USER_TOKEN_VALUE=$(kubectl -n ${K8S_NS} get secret/${USER_TOKEN_NAME} --template='{{.data.admin_user}}' | base64 --decode)
 export CURRENT_CONTEXT=$(kubectl config current-context)
