@@ -1,4 +1,13 @@
+## Using operator from this directory
 
+# Ensure mount point /mnt/data/elastic is created and permissions given
+kubect apply -f elk_ns.yaml
+kubect apply -f sc_elastic.yaml
+kubectl apply -f elk_pv.yaml
+kubectl apply -f elk_pv.yaml
+kubectl apply -f elastic_basic_data.yml
+
+---
 mylan="192.168.2.0"
 elastic_port=9210
 sshUser=myuser
