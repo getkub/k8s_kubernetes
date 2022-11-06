@@ -32,7 +32,8 @@ https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/cre
 kubectl create secret generic admin-user --from-literal=admin_user=admin_pass --namespace kubernetes-dashboard 
 kubectl -n kubernetes-dashboard get secret
 
-kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboard get secret | grep admin-user | awk '{print $1}')
+kubectl -n kubernetes-dashboard get secrets/admin-user --template={{.data.admin_user}} |  base64 --decode
+
 ```
 
 ### In your laptop, port forward and access as localhost
