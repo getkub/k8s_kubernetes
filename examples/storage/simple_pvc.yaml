@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: elasticsearch-data
-  namespace: elk
+  name: my-pvc
+  namespace: my-ns
 spec:
-  storageClassName: local-path
+  storageClassName: my-sc-name
   accessModes:
     - ReadWriteOnce
   resources:
