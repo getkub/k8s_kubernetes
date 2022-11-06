@@ -20,7 +20,7 @@ spec:
         resources:
           requests:
             storage: 10Gi
-        storageClassName: local-path
+        storageClassName: sc-elastic
 ---
 apiVersion: kibana.k8s.elastic.co/v1
 kind: Kibana
