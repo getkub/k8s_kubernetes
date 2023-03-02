@@ -5,6 +5,8 @@
 export KUBECONFIG=/tmp/somekubeConfig
 kubectl version --short
 ns="default"
+kubectl config view
+kubectl get node
 kubectl config set-context $(kubectl config current-context) --namespace=${ns}
 nodename=localhost
 
