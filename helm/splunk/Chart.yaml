@@ -1,0 +1,5 @@
+apiVersion: v2
+name: splunk
+description: A Helm chart for deploying Splunk in Kubernetes
+version: 0.1.0
+appVersion: 8.3.3
