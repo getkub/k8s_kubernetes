@@ -22,3 +22,12 @@ helm create splunk
 helm package splunk
 helm install my-splunk splunk-0.1.0.tgz
 ```
+
+
+
+```
+helm list --namespace my-namespace
+
+helm delete <release-name>
+helm delete --purge $(helm ls -q)
+```
