@@ -1,0 +1,29 @@
+# Default values for splunk.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: splunk/splunk
+  tag: latest
+
+adminPassword: yourpassword
+
+service:
+  type: ClusterIP
+  port: 8000
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 512Mi
+  limits:
+    cpu: 500m
+    memory: 1Gi
+
+persistence:
+  etc:
+    size: 10Gi
+  var:
+    size: 50Gi

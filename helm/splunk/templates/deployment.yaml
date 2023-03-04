@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "splunk.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "splunk.name" . }}
+    helm.sh/chart: {{ include "splunk.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "splunk.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "splunk.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: splunk
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          env:
+            - name: SPLUNK_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: splunk-secret
+                  key: admin_password
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+            - name: metric
+              containerPort: 8088
+              protocol: TCP
+            - name: splunk
+              containerPort: 8089
+              protocol: TCP
+          volumeMounts:
+            - name: splunk-etc
+              mountPath: /opt/splunk/etc
+            - name: splunk-var
+              mountPath: /opt/splunk/var
+      volumes:
+        - name: splunk-etc
+          persistentVolumeClaim:
+            claimName: splunk-etc
+        - name: splunk-var
+          persistentVolumeClaim:
+            claimName: splunk-var
