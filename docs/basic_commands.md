@@ -3,6 +3,9 @@
 ### K8s commands
 ```
 export KUBECONFIG=/tmp/somekubeConfig
+kubectl config get-contexts
+# kubectl config use-context <NAME_OF_CONTEXT>
+
 kubectl version --short
 ns="default"
 kubectl config view
