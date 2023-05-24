@@ -11,6 +11,8 @@ ns="default"
 kubectl config view
 kubectl get node
 kubectl get node -L node.kubernetes.io/instance-type
+for line in $(cat "xxx"); do kubectl describe node $line | grep "Allocated resources" -AS; done
+
 kubectl config set-context $(kubectl config current-context) --namespace=${ns}
 nodename=localhost
 
