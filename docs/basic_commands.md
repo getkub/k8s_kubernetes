@@ -26,6 +26,9 @@ kubectl describe node  $nodename
 
 # Get pod name ONLY
 kubectl get pods --no-headers -o custom-columns=":metadata.name"
+
+kubectl get endpoints -n ns
+
 ```
 
 ### Scale within deployment
