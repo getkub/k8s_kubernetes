@@ -27,6 +27,9 @@ kubectl describe node  $nodename
 # Get pod name ONLY
 kubectl get pods --no-headers -o custom-columns=":metadata.name"
 
+# Label Columns
+kubectl get deployments --label-columns version
+
 kubectl get endpoints -n ns
 
 ```
