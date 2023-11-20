@@ -1,0 +1,7 @@
+volumes:
+- name: bucket
+  csi: 
+    driver: gcsfuse.csi.storage.gke.io
+    readOnly: false
+    volumeAttributes:
+      bucketName: my-gcs-bucket-name
