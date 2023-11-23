@@ -10,7 +10,7 @@ kubectl get nodes
 ```
 
 
-## Delete things up
+## Delete cluster
 ```
 k3d cluster delete demo
 ```
