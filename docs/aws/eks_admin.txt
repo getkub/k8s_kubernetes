@@ -1,0 +1,14 @@
+aws eks list-clusters
+aws eks list-clusters --regsion eu-west-1
+
+aws eks describe-cluster --name my-dev-01
+
+
+## IAM
+aws iam list-roles
+
+
+
+## Add cluster to profile
+aws eks --region eu-west-1 update-kubeconfig --name my-dev-01 --profile dev 
+
