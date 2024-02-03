@@ -1,20 +1,23 @@
----
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: postgres-statefulset
   namespace: n8n
-  labels: &labels
+  labels:
     app: postgres
     component: statefulset
 spec:
   serviceName: postgres-statefulset
   replicas: 1
   selector:
-    matchLabels: *labels
+    matchLabels:
+      app: postgres
+      component: statefulset
   template:
     metadata:
-      labels: *labels
+      labels:
+        app: postgres
+        component: statefulset
     spec:
       containers:
       - name: postgres
@@ -25,3 +28,16 @@ spec:
         envFrom:
         - secretRef:
             name: postgres-secrets
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-storage
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: local-storage
+      resources:
+        requests:
+          storage: 500Mi
