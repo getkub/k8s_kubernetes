@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: n8n-claim0
+  name: n8n-claim0
+spec:
+  accessModes:
+    - ReadWriteOnce
+#   selector:
+#     matchLabels:
+#       disk-type: "ssd-10gb"
+#   storageClassName: "local-storage"
+  resources:
+    requests:
+      storage: 500Mi
+status: {}
