@@ -59,12 +59,18 @@ export K8S_NS=kubernetes-dashboard
 
 ### Export Variables
 ```
-export USER_TOKEN_VALUE=$(kubectl -n ${K8S_NS} create token ${K8S_DB_USER} --duration=8760h --token-ttl=43200)
+export USER_TOKEN_VALUE=$(kubectl -n ${K8S_NS} create token ${K8S_DB_USER} --duration=8760h)
+
 export USER_TOKEN_NAME=$(kubectl -n ${K8S_NS} get serviceaccount ${K8S_DB_USER} --template='{{.metadata.name}}')
+
 # export USER_TOKEN_VALUE=$(kubectl -n ${K8S_NS} get secret/${USER_TOKEN_NAME} --template='{{.data.admin_user}}' | base64 --decode)
+
 export CURRENT_CONTEXT=$(kubectl config current-context)
+
 export CURRENT_CLUSTER=$(kubectl config view --raw -o=go-template='{{range .contexts}}{{if eq .name "'''${CURRENT_CONTEXT}'''"}}{{ index .context "cluster" }}{{end}}{{end}}')
+
 export CLUSTER_CA=$(kubectl config view --raw --minify --flatten -o jsonpath='{.clusters[].cluster.certificate-authority-data}')
+
 export CLUSTER_SERVER=$(kubectl config view --raw -o=go-template='{{range .clusters}}{{if eq .name "'''${CURRENT_CLUSTER}'''"}}{{ .cluster.server }}{{end}}{{ end }}')
 ```
 
