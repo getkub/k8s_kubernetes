@@ -1,17 +1,16 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   labels:
     service: n8n
   name: n8n
   namespace: n8n
 spec:
+  serviceName: "n8n"
   replicas: 1
   selector:
     matchLabels:
       service: n8n
-  strategy:
-    type: Recreate
   template:
     metadata:
       labels:
@@ -69,17 +68,24 @@ spec:
               name: n8n-claim0
             - mountPath: /code/workflow
               name: n8n-code-workflow
-      restartPolicy: Always
-      volumes:
-        - name: n8n-claim0
-          persistentVolumeClaim:
-            claimName: n8n-claim0
-        - name: n8n-code-workflow
-          persistentVolumeClaim:
-            claimName: n8n-code-workflow
-        - name: n8n-secret
-          secret:
-            secretName: n8n-secret
-        - name: postgres-secret
-          secret:
-            secretName: postgres-secret
+  volumeClaimTemplates:
+    - metadata:
+        name: n8n-claim0
+        labels:
+          service: n8n
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 500Mi
+    - metadata:
+        name: n8n-code-workflow
+        labels:
+          service: n8n-code-workflow
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 250Mi
