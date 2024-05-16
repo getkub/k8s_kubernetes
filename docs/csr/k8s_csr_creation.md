@@ -20,7 +20,10 @@ https://www.vaultproject.io/docs/platform/k8s/helm/examples/standalone-tls
 openssl genrsa -out ${TMPDIR}/vault.key 2048
 ```
 
-## Create a Certificate Signing Request (CSR).
+## Create a Certificate Signing Request (CSR) config file.
+
+- https://kubernetes.io/docs/tasks/tls/managing-tls-in-a-cluster
+
 ```
 cat <<EOF >${TMPDIR}/csr.conf
 [req]
@@ -41,12 +44,12 @@ IP.1 = 127.0.0.1
 EOF
 ```
 
-## Create a CSR.
+## Create the CSR.
 ```
 openssl req -new -key ${TMPDIR}/vault.key -subj "/CN=${SERVICE}.${NAMESPACE}.svc" -out ${TMPDIR}/server.csr -config ${TMPDIR}/csr.conf
 ```
 
-## Create the certificate
+## Create a CertificateSigningRequest object to send to the Kubernetes API
 
 ```
 export CSR_NAME=vault-csr
