@@ -10,4 +10,9 @@ iam.gke.io/gcp-service-account: my-token-view@my-project-name.iam.gserviceaccoun
 gcloud iam service-accounts add-iam-policy-binding my-token-view@my-project-name.iam.gserviceaccount.com \
 --role "roles/iam.workloadIdentityUser" \
 --member "serviceAccount:my-project-name.svc.id.goog[my-ns/my-workload-name]"
+
+
+# Remove any conditions
+gcloud iam service-accounts add-iam-policy-binding my-token-view@my-project-name.iam.gserviceaccount.com \
+--role "roles/secretmanager.secretAccessor" --condition='None'
 ```
