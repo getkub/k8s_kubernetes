@@ -116,6 +116,19 @@ sudo iptables -I INPUT -s ${mylan}/24 -p tcp --dport ${elastic_port} -j ACCEPT
 sudo iptables-save >/etc/iptables/rules.v4
 ```
 
+### filebeat
+
+- Will enable the filebeat to output to /tmp/filebeat/
+
+```sh
+mkdir -p /tmp/filebeat/
+export ELK_VERSION=9.0.1
+envsubst < elk_filebeat.yml | kubectl apply -f -
+
+kubectl -n elk get pods
+```
+
+
 ---
 
 ## 6. Access Elasticsearch
