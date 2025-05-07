@@ -78,3 +78,67 @@ kubectl apply -f secretproviderclass.yml
 ```
 kubectl get secret filebeat-gcp-secret -n elk -o yaml
 ```
+
+
+## Step 3: Updated filebeat.yml
+This YAML:
+- Uses httpjson to fetch alerts from https://api.eu.xdr.trendmicro.com/v3.0/workbench/alerts.
+- References ${api_token} from the Kubernetes secret filebeat-gcp-secret using secretRef.
+- Outputs to /tmp/filebeat/data.log.
+- Runs a single pod with the filebeat-sa service account.
+
+```
+apiVersion: beat.k8s.elastic.co/v1beta1
+kind: Beat
+metadata:
+  name: quickstart-filebeat
+  namespace: elk
+spec:
+  type: filebeat
+  version: ${ELK_VERSION}
+  serviceAccountName: filebeat-sa
+  config:
+    filebeat.inputs:
+    - type: httpjson
+      name: trend_micro_vision_one-alert
+      interval: 10m
+      request.method: GET
+      request.url: https://api.eu.xdr.trendmicro.com/v3.0/workbench/alerts
+      request.transforms:
+      - set:
+          target: header.Authorization
+          value: 'Bearer [[.api_token]]'
+    output.file:
+      path: "/tmp/filebeat"
+      filename: data.log
+      rotate_every_kb: 10000
+      number_of_files: 7
+  configRef:
+    secretName: filebeat-gcp-secret
+  deployment:
+    replicas: 1
+    podTemplate:
+      spec:
+        containers:
+        - name: filebeat
+          securityContext:
+            runAsUser: 0
+          resources:
+            requests:
+              memory: 200Mi
+              cpu: 0.1
+            limits:
+              memory: 500Mi
+              cpu: 0.5
+          volumeMounts:
+          - name: filebeat-output
+            mountPath: /tmp/filebeat
+        volumes:
+        - name: filebeat-output
+          hostPath:
+            path: /tmp/filebeat
+            type: DirectoryOrCreate
+```
+
+## Step 4: Apply and Verify
+
