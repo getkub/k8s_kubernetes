@@ -1,28 +1,24 @@
-# elastic_basic_data.yml
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
   name: quickstart
   namespace: elk
 spec:
-  version: 9.0.1
+  version: ${ELK_VERSION}
   nodeSets:
   - name: default
     count: 1
     config:
       node.store.allow_mmap: false
-    podTemplate:
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
       spec:
-        containers:
-        - name: elasticsearch
-          volumeMounts:
-          - name: elastic-data
-            mountPath: /usr/share/elasticsearch/data
-        volumes:
-        - name: elastic-data
-          hostPath:
-            path: /tmp/elastic/data
-            type: DirectoryOrCreate
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 2Gi
 ---
 apiVersion: kibana.k8s.elastic.co/v1
 kind: Kibana
@@ -30,7 +26,7 @@ metadata:
   name: quickstart
   namespace: elk
 spec:
-  version: 9.0.1
+  version: ${ELK_VERSION}
   count: 1
   elasticsearchRef:
     name: quickstart
@@ -41,7 +37,7 @@ metadata:
   name: quickstart-fleet-server
   namespace: elk
 spec:
-  version: 9.0.1
+  version: ${ELK_VERSION}
   kibanaRef:
     name: quickstart
   elasticsearchRefs:

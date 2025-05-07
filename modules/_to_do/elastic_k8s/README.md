@@ -11,13 +11,11 @@ This guide provides step-by-step instructions to deploy the Elastic Stack (Elast
 - **Persistent storage**: For production, prefer dynamic provisioning with a StorageClass. If using `hostPath`, ensure the path exists on all nodes or use node affinity.
 
 ```sh
-# If using hostPath, create the mount point on all relevant nodes
-mkdir -p /tmp/elastic
-mkdir -p /tmp/elastic/data /tmp/elastic/config
+mkdir -p /tmp/elastic/data
 sudo chown -R 1000:1000 /tmp/elastic
 sudo chmod -R 775 /tmp/elastic
-
-# sudo chown -R 1000:1000 /tmp/elastic
+rm -rf /tmp/elastic/data/*
+ls -ld /tmp/elastic /tmp/elastic/data
 ```
 
 ---
@@ -26,8 +24,6 @@ sudo chmod -R 775 /tmp/elastic
 
 ```sh
 kubectl apply -f elk_ns.yaml
-kubectl apply -f sc_elastic.yaml
-# Only if using static PVs
 kubectl apply -f elk_pv.yaml 
 ```
 
@@ -56,6 +52,8 @@ Apply the Elasticsearch manifest:
 ```sh
 export ELK_VERSION=9.0.1
 envsubst < elastic_basic_data.yml | kubectl apply -f -
+
+kubectl -n elk get pods
 ```
 
 ---

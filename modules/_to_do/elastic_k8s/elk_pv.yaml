@@ -1,14 +1,14 @@
+# pv.yml
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: pv-elastic
-  labels:
-    type: local
+  name: elastic-pv
 spec:
-  storageClassName: sc-elastic
   capacity:
-    storage: 2Gi  # Match the 2Gi requested in volumeClaimTemplates
+    storage: 2Gi
   accessModes:
     - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
   hostPath:
-    path: "/tmp/elastic"
+    path: /tmp/elastic/data
+    type: DirectoryOrCreate
