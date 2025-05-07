@@ -1,4 +1,3 @@
----
 apiVersion: agent.k8s.elastic.co/v1alpha1
 kind: Agent
 metadata:
@@ -12,6 +11,7 @@ spec:
   - name: quickstart
   mode: fleet
   fleetServerEnabled: true
+  policyID: fixed-kubernetes-monitoring #Placeholder
   deployment:
     replicas: 1
     podTemplate:
@@ -25,5 +25,3 @@ spec:
             limits:
               memory: 1Gi
               cpu: 0.5
-        securityContext:
-          runAsUser: 0

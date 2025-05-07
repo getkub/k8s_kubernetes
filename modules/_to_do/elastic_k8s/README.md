@@ -51,8 +51,48 @@ Apply the Elasticsearch manifest:
 
 ```sh
 export ELK_VERSION=9.0.1
-envsubst < elastic_basic_data.yml | kubectl apply -f -
+envsubst < elastic_kibana.yml | kubectl apply -f -
 
+kubectl -n elk get pods
+```
+
+
+### Elastic agent. 
+
+- Will enable the agent
+
+```sh
+export ELK_VERSION=9.0.1
+envsubst < elastic_agent.yml | kubectl apply -f -
+
+kubectl -n elk get agents
+```
+
+- Get kibana URL and creds
+```
+kubectl port-forward service/quickstart-kb-http -n elk 5601:5601 &
+# user = elastic
+kubectl get secret -n elk quickstart-es-elastic-user -o=jsonpath='{.data.elastic}' | base64 --decode; echo
+```
+
+- Using Kibana Add a fixed policy
+```
+POST kbn:/api/fleet/agent_policies?sys_monitoring=true
+{
+  "id": "fixed-kubernetes-monitoring",
+  "name": "Kubernetes Monitoring",
+  "description": "Fixed policy for Kubernetes monitoring",
+  "namespace": "default",
+  "monitoring_enabled": ["logs", "metrics"]
+}
+
+```
+GET kbn:/api/fleet/agent_policies
+GET kbn:/api/fleet/agent_policies/fixed-kubernetes-monitoring
+```
+
+- Should be able to access agent pods
+```
 kubectl -n elk get pods
 ```
 
