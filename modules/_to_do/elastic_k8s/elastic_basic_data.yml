@@ -44,6 +44,17 @@ spec:
   - name: quickstart
   mode: fleet
   fleetServerEnabled: true
-  policyID: default-fleet-policy
+  policyID: default-fleet-policy  # Update with actual policy ID after Step 4
   deployment:
     replicas: 1
+    podTemplate:
+      spec:
+        containers:
+        - name: agent
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 0.2
+            limits:
+              memory: 1Gi
+              cpu: 0.5
