@@ -126,6 +126,19 @@ export ELK_VERSION=9.0.1
 envsubst < elk_filebeat.yml | kubectl apply -f -
 
 kubectl -n elk get pods
+kubectl logs -n elk $(kubectl get pods -n elk -l beat-name=quickstart-filebeat -o name)
+kubectl exec -it -n elk $(kubectl get pods -n elk -l beat-name=quickstart-filebeat -o name) -- sh -c "ls -la /tmp/filebeat"
+
+# Get the pod name
+POD_NAME=$(kubectl get pods -n elk -l beat-name=quickstart-filebeat -o name | sed 's/pod\///')
+
+# Copy files from the pod to your local machine
+kubectl cp elk/${POD_NAME}:/tmp/filebeat/data.log-20250507.ndjson /tmp/filebeat/data.log
+
+## OR if tar not available
+kubectl exec -n elk $POD_NAME -- cat /tmp/filebeat/data.log-20250507.ndjson > /tmp/filebeat/data.log
+
+
 ```
 
 
