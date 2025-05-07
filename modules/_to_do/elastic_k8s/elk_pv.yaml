@@ -1,17 +1,14 @@
----
 apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: pv-elastic
-  namespace: elk
   labels:
     type: local
 spec:
   storageClassName: sc-elastic
   capacity:
-    storage: 10Gi
+    storage: 2Gi  # Match the 2Gi requested in volumeClaimTemplates
   accessModes:
     - ReadWriteOnce
   hostPath:
     path: "/tmp/elastic"
----

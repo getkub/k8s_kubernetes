@@ -12,8 +12,12 @@ This guide provides step-by-step instructions to deploy the Elastic Stack (Elast
 
 ```sh
 # If using hostPath, create the mount point on all relevant nodes
-sudo mkdir -p /tmp/elastic
+mkdir -p /tmp/elastic
+mkdir -p /tmp/elastic/data /tmp/elastic/config
 sudo chown -R 1000:1000 /tmp/elastic
+sudo chmod -R 775 /tmp/elastic
+
+# sudo chown -R 1000:1000 /tmp/elastic
 ```
 
 ---
@@ -23,7 +27,7 @@ sudo chown -R 1000:1000 /tmp/elastic
 ```sh
 kubectl apply -f elk_ns.yaml
 kubectl apply -f sc_elastic.yaml
- # Only if using static PVs
+# Only if using static PVs
 kubectl apply -f elk_pv.yaml 
 ```
 
@@ -50,7 +54,8 @@ Or use your local operator manifest if present.
 Apply the Elasticsearch manifest:
 
 ```sh
-kubectl apply -f elastic_basic_data.yml
+export ELK_VERSION=9.0.1
+envsubst < elastic_basic_data.yml | kubectl apply -f -
 ```
 
 ---

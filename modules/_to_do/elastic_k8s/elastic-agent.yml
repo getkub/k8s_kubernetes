@@ -1,0 +1,29 @@
+---
+apiVersion: agent.k8s.elastic.co/v1alpha1
+kind: Agent
+metadata:
+  name: quickstart-fleet-server
+  namespace: elk
+spec:
+  version: ${ELK_VERSION}
+  kibanaRef:
+    name: quickstart
+  elasticsearchRefs:
+  - name: quickstart
+  mode: fleet
+  fleetServerEnabled: true
+  deployment:
+    replicas: 1
+    podTemplate:
+      spec:
+        containers:
+        - name: agent
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 0.2
+            limits:
+              memory: 1Gi
+              cpu: 0.5
+        securityContext:
+          runAsUser: 0
