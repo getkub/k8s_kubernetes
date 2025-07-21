@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "n8n-stack.fullname" . }}
+  labels:
+    app: {{ include "n8n-stack.name" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "n8n-stack.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "n8n-stack.name" . }}
+    spec:
+      containers:
+        - name: n8n
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 5678
+          env:
+            - name: N8N_BASIC_AUTH_ACTIVE
+              value: "false"
+          volumeMounts:
+            - name: n8n-data
+              mountPath: /home/node/.n8n
+      volumes:
+        - name: n8n-data
+          persistentVolumeClaim:
+            claimName: {{ include "n8n-stack.fullname" . }}-pvc

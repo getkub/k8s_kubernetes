@@ -1,0 +1,6 @@
+apiVersion: v2
+name: n8n-stack
+description: Helm chart for n8n Workflow Automation
+type: application
+version: 0.1.0
+appVersion: "0.20.0"

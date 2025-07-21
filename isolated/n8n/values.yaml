@@ -1,0 +1,41 @@
+replicaCount: 1
+
+image:
+  repository: n8nio/n8n
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations: 
+    kubernetes.io/ingress.class: nginx
+  hosts:
+    - host: n8n.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+  # Example:
+  # tls:
+  #   - secretName: n8n-tls
+  #     hosts:
+  #       - n8n.local
+
+persistence:
+  enabled: true
+  size: 1Gi
+  accessModes:
+    - ReadWriteOnce
+
+config:
+  database:
+    type: sqlite
+
+secret: {}
+
+resources: {}
