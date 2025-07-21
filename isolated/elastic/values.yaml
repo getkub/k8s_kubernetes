@@ -1,0 +1,15 @@
+elasticsearch:
+  name: quickstart
+  version: 9.0.3
+  replicas: 3
+  storageSize: 20Gi
+
+kibana:
+  enabled: true
+  replicas: 1
+
+beats:
+  enabled: false
+
+ingress:
+  enabled: false
