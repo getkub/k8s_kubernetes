@@ -154,3 +154,19 @@ scaling:
 * [n8n Helm Chart Documentation](https://8gears.container-registry.com/)
 * [n8n Official Docs](https://docs.n8n.io/)
 
+
+## Operational
+
+- Use port-forwarding if no ingress IP is available
+
+```
+kubectl port-forward svc/n8n-stack-n8n-stack 5678:80 -n n8n-system &
+```
+
+## Scale down & up
+
+```
+kubectl scale deployment n8n-stack-n8n-stack -n n8n-system --replicas=0
+
+kubectl scale deployment n8n-stack-n8n-stack -n n8n-system --replicas=1
+```

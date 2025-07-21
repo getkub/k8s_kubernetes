@@ -110,3 +110,23 @@ kubectl port-forward service/kibana-kb-http 5601 -n elastic-system &
 * Modify templates/elasticsearch.yaml and templates/kibana.yaml to adjust replicas, resources, or storage classes
 
 ---
+
+## Scale down & up
+
+```
+# For Elastic operator statefulset
+kubectl scale statefulset elastic-operator -n elastic-system --replicas=0
+
+# For Elasticsearch StatefulSet (assuming name 'quickstart-es')
+kubectl scale statefulset quickstart-es -n elastic-system --replicas=0
+
+# For Kibana deployment (assuming name 'kibana-kb')
+kubectl scale deployment kibana-kb -n elastic-system --replicas=0
+
+```
+
+```
+kubectl scale statefulset elastic-operator -n elastic-system --replicas=1
+kubectl scale statefulset quickstart-es -n elastic-system --replicas=3
+kubectl scale deployment kibana-kb -n elastic-system --replicas=1
+```
