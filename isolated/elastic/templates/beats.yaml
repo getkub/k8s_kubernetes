@@ -1,0 +1,3 @@
+{{- if .Values.beats.enabled }}
+# Add your Beats configuration here if needed
+{{- end }}
