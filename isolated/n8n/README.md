@@ -68,7 +68,7 @@ n8n-6c6fd9d6d4-8q9d8       1/1     Running   0          2m
 ### 3. Access n8n (Port-Forward)
 
 ```bash
-kubectl port-forward svc/n8n 5678:80 -n n8n-system
+kubectl port-forward svc/n8n-stack-n8n-stack 5678:80 -n n8n-system &
 ```
 
 Then open [http://localhost:5678](http://localhost:5678).
