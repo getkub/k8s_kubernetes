@@ -1,0 +1,197 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "alert-webhook",
+        "options": {}
+      },
+      "id": "1160b827-885a-41c6-a1b4-ce294cbde270",
+      "name": "Alert Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        96
+      ],
+      "webhookId": "alert-webhook-001"
+    },
+    {
+      "parameters": {
+        "authentication": "basicAuth",
+        "url": "https://quickstart-es-http.elastic-system.svc.cluster.local:9200/soc-playbooks/_search",
+        "allowUnauthorizedCerts": true,
+        "jsonParameters": true,
+        "options": {}
+      },
+      "id": "f9fc6181-c666-4545-96c8-1d077a0732ea",
+      "name": "Find Playbook",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        96,
+        96
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "OACrezDoHefwXEqF",
+          "name": "elastic_local"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "basicAuth",
+        "requestMethod": "POST",
+        "url": "https://quickstart-es-http.elastic-system.svc.cluster.local:9200/_query",
+        "allowUnauthorizedCerts": true,
+        "options": {},
+        "bodyParametersUi": {
+          "parameter": [
+            {
+              "name": "query",
+              "value": "={{$json.query}}"
+            }
+          ]
+        }
+      },
+      "id": "0c3fee09-22ef-464d-97bd-96c669210a21",
+      "name": "Run ES|QL Query",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        576,
+        96
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "OACrezDoHefwXEqF",
+          "name": "elastic_local"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const playbook = $json.hits?.hits?.[0]?._source || {};\nconst template = playbook.esql_template || '';\n\nconst webhookData = $node[\"Alert Webhook\"].json;\nconst domain = webhookData.body?.domain || 'unknown.com';\n\nreturn [\n  {\n    json: {\n      query: template.replace('{{domain}}', domain),\n      domain,\n    },\n  },\n];\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        352,
+        96
+      ],
+      "id": "67a63828-4fb0-4941-8e76-7e29d04648f3",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "model": "gpt-4o",
+        "prompt": {
+          "messages": [
+            {
+              "role": "system",
+              "content": "=You are a cybersecurity log analysis assistant. \nYour task is to analyze firewall and security logs (e.g., Fortinet logs) and produce clear, concise, and accurate summaries. \nIdentify unique users, accessed domains, counts of events, and time ranges. \nBe concise, but include important details like IP addresses, domains, and timestamps if relevant.\n"
+            },
+            {
+              "content": "=You are an expert log analyst.\n\nYou will be given a Fortinet log dataset in JSON format.\n\nDataset structure:\n- \"columns\": an array defining column names,\n- \"values\": an array of rows where each row corresponds to the columns.\n\nYour tasks:\n1. Reconstruct the log entries by mapping each row of \"values\" to its column keys.\n2. Analyze the log entries.\n3. Return a JSON object with exactly the following keys:\n   - \"uniqueUsers\": number of unique users (source.ip).\n   - \"domains\": comma-separated list of domains accessed.\n   - \"timeRange\": an object with \"earliest\" and \"latest\" ISO8601 timestamps (from @timestamp).\n   - \"summary\": a brief 2-3 sentence summary of the activity.\n\nImportant:\n- Return only a single JSON object.\n- Do NOT include any explanations, markdown code blocks, or other text.\n- The output must be strictly valid JSON.\n\nHere is the log data:\n{{ JSON.stringify($json) }}\n"
+            }
+          ]
+        },
+        "options": {
+          "maxTokens": 500
+        },
+        "requestOptions": {}
+      },
+      "id": "785a9e68-e33b-4b6f-b636-44c48006d6b1",
+      "name": "OpenAI_summarise",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [
+        832,
+        96
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "0M71cNo4tQktcxRm",
+          "name": "oai_key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const openaiResponses = $input.all().map(item => item.json);\n\nif (!Array.isArray(openaiResponses) || openaiResponses.length === 0) {\n  throw new Error('Input array is empty or invalid');\n}\n\nconst rawJsonString = openaiResponses[0]?.message?.content;\n\nif (!rawJsonString) {\n  throw new Error('OpenAI response content is missing');\n}\n\nlet data;\ntry {\n  data = JSON.parse(rawJsonString);\n} catch (error) {\n  throw new Error('Failed to parse JSON from OpenAI response:\\n' + rawJsonString);\n}\n\nconst metricsTable = `\n<table border=\"1\" cellpadding=\"5\" cellspacing=\"0\" style=\"border-collapse: collapse; width: 100%; max-width: 600px; margin: 10px auto;\">\n  <thead>\n    <tr style=\"background-color: #0066cc; color: white;\">\n      <th style=\"padding: 8px; text-align: left;\">Metric</th>\n      <th style=\"padding: 8px; text-align: left;\">Details</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr><td style=\"padding: 8px;\">Unique Users (source.ip)</td><td style=\"padding: 8px;\">${data.uniqueUsers ?? 'N/A'}</td></tr>\n    <tr><td style=\"padding: 8px;\">Domains Accessed</td><td style=\"padding: 8px;\">${data.domains ?? 'N/A'}</td></tr>\n  </tbody>\n</table>\n`;\n\nconst timeRangeTable = `\n<table border=\"1\" cellpadding=\"5\" cellspacing=\"0\" style=\"border-collapse: collapse; width: 100%; max-width: 600px; margin: 10px auto;\">\n  <thead>\n    <tr style=\"background-color: #0066cc; color: white;\">\n      <th style=\"padding: 8px; text-align: left;\">Time Range</th>\n      <th style=\"padding: 8px; text-align: left;\">Timestamp</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr><td style=\"padding: 8px;\">Start Time</td><td style=\"padding: 8px;\">${data.timeRange?.earliest ?? 'N/A'}</td></tr>\n    <tr><td style=\"padding: 8px;\">End Time</td><td style=\"padding: 8px;\">${data.timeRange?.latest ?? 'N/A'}</td></tr>\n  </tbody>\n</table>\n`;\n\nconst summarySection = `\n<div style=\"max-width: 600px; margin: 10px auto; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333;\">\n  <h3>Activity Summary</h3>\n  <p>${data.summary ?? 'No summary available'}</p>\n</div>\n`;\n\nconst htmlReport = metricsTable + timeRangeTable + summarySection;\n\nreturn [\n  {\n    json: {\n      htmlReport,\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1072,
+        96
+      ],
+      "id": "1aca4046-14a3-4c14-87e4-400a1fe40a1c",
+      "name": "Code1"
+    }
+  ],
+  "connections": {
+    "Alert Webhook": {
+      "main": [
+        [
+          {
+            "node": "Find Playbook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Playbook": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run ES|QL Query": {
+      "main": [
+        [
+          {
+            "node": "OpenAI_summarise",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Run ES|QL Query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI_summarise": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "43ff53e24be6503dc4d60eef7def9a4e3e2f06f971c8d03e8aabb0a230fe1d57"
+  }
+}
