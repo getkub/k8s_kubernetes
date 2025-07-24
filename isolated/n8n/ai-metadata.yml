@@ -1,0 +1,56 @@
+name: LLM_001
+detection_ids:
+  - DET_007
+  - DET_008
+
+mitre_tactics:
+  - TA0001  # Initial Access
+  - TA0002  # Execution
+
+knowledge_base:
+  - DET_007.playbook.md
+  - DET_008.playbook.md
+
+prompts:
+  - system: |
+      You are a cybersecurity log analysis assistant.
+      Analyze firewall and security logs (e.g., Fortinet) and summarize findings.
+      Include unique users, domains, IP addresses, event counts, and time ranges.
+  - user: |
+      You are an expert log analyst.
+      Given log data (columns + values), reconstruct entries and summarize:
+      - uniqueUsers (from source.ip)
+      - domains (comma-separated)
+      - timeRange (earliest/latest)
+      - summary (2-3 sentences)
+      - risk_ratio (0 to 1)
+      - judgement (human-readable)
+      Return **only valid JSON** with exactly these keys, but wrapped as a list of actions.
+
+examples:
+  - input:
+      columns: ["@timestamp", "source.ip", "destination.domain"]
+      values:
+        - ["2025-07-23T12:01:00Z", "192.168.1.10", "example.com"]
+        - ["2025-07-23T12:02:00Z", "192.168.1.11", "malicious.com"]
+    output:
+      - email:
+          subject: "Security Alert: Fortinet Log Analysis"
+          body: |
+            Two unique users accessed 2 domains, including a suspicious domain (malicious.com).
+            Risk Ratio: 0.7
+            Judgement: Requires further investigation.
+      - analysis:
+          uniqueUsers: 2
+          domains: "example.com, malicious.com"
+          timeRange:
+            earliest: "2025-07-23T12:01:00Z"
+            latest: "2025-07-23T12:02:00Z"
+          summary: "Two unique users accessed 2 domains, including a suspicious domain (malicious.com)."
+          risk_ratio: 0.7
+          judgement: "Requires further investigation."
+      - api:
+          link: "https://elastic.example.com/detections/DET_007"
+          request:
+            status: "update"
+            reason: "Auto-flagged due to suspicious domain (malicious.com)"
