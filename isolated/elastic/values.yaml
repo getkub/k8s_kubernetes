@@ -2,13 +2,27 @@ elasticsearch:
   name: quickstart
   replicas: 2
   storageSize: 20Gi
+  host: "https://quickstart-es-http.elastic-system.svc.cluster.local:9200"
 
 kibana:
   enabled: true
   replicas: 1
+  host: "https://kibana-kb-http.elastic-system.svc.cluster.local:5601"
 
-beats:
-  enabled: false
-
-ingress:
-  enabled: false
+# agent:
+#   enabled: true
+#   mode: "fleet"  # or "standalone"
+#   namespace: "elastic-agent"
+#   elasticsearch:
+#     host: "https://quickstart-es-http.elastic-system.svc.cluster.local:9200"
+#     username: "elastic"
+#     passwordFromSecret:
+#       name: quickstart-es-elastic-user
+#       key: elastic
+#   kibana:
+#     host: "https://kibana-kb-http.elastic-system.svc.cluster.local:5601"
+#   fleet:
+#     serverPolicy: "k8s-policy"
+#     enrollmentTokenFromSecret:
+#       name: elastic-agent-enrollment-token
+#       key: token

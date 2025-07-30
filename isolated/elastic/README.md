@@ -54,11 +54,12 @@ OR
 
 Run:
 ```
+./scripts/create-secrets.sh
 ./scripts/deploy.sh
 ```
 This deploys:
 
-* Elasticsearch (3-node cluster)
+* Elasticsearch (2-node cluster)
 * Kibana (1 replica)
 
 ---

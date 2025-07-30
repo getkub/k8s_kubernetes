@@ -2,15 +2,20 @@
 set -e
 
 NAMESPACE="elastic-system"
+AGENT_NAMESPACE="elastic-agent"
 RELEASE_NAME="elastic-stack"
 CHART_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
+# Ensure namespaces exist
+kubectl get namespace "$NAMESPACE" >/dev/null 2>&1 || kubectl create namespace "$NAMESPACE"
+kubectl get namespace "$AGENT_NAMESPACE" >/dev/null 2>&1 || kubectl create namespace "$AGENT_NAMESPACE"
+
 echo ">>> Deploying Elasticsearch & Kibana..."
-helm upgrade --install $RELEASE_NAME $CHART_PATH -n $NAMESPACE --create-namespace
+helm upgrade --install "$RELEASE_NAME" "$CHART_PATH" -n "$NAMESPACE" --create-namespace
 
 echo ">>> Waiting for Elasticsearch cluster to be Ready..."
 for i in {1..60}; do
-    PHASE=$(kubectl get elasticsearch -n $NAMESPACE -o jsonpath='{.items[0].status.phase}')
+    PHASE=$(kubectl get elasticsearch -n "$NAMESPACE" -o jsonpath='{.items[0].status.phase}')
     echo "Current Elasticsearch phase: $PHASE"
     if [[ "$PHASE" == "Ready" ]]; then
         echo ">>> Elasticsearch is Ready!"
@@ -24,10 +29,10 @@ if [[ "$PHASE" != "Ready" ]]; then
     exit 1
 fi
 
-if kubectl get kibana -n $NAMESPACE >/dev/null 2>&1; then
+if kubectl get kibana -n "$NAMESPACE" >/dev/null 2>&1; then
     echo ">>> Waiting for Kibana CR to be Ready..."
     for i in {1..60}; do
-        KIBANA_PHASE=$(kubectl get kibana -n $NAMESPACE -o jsonpath='{.items[0].status.health}' 2>/dev/null || echo "unknown")
+        KIBANA_PHASE=$(kubectl get kibana -n "$NAMESPACE" -o jsonpath='{.items[0].status.health}' 2>/dev/null || echo "unknown")
         echo "Current Kibana health: $KIBANA_PHASE"
         if [[ "$KIBANA_PHASE" == "green" ]]; then
             echo ">>> Kibana is Ready!"
