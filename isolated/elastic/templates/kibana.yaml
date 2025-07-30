@@ -5,7 +5,7 @@ metadata:
   name: kibana
   namespace: elastic-system
 spec:
-  version: {{ .Values.elasticsearch.version }}
+  version: {{ required "Chart.AppVersion is required" .Chart.AppVersion }}
   count: {{ .Values.kibana.replicas }}
   elasticsearchRef:
     name: {{ .Values.elasticsearch.name }}

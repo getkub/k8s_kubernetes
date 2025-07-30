@@ -3,7 +3,7 @@ set -e
 
 NAMESPACE="elastic-system"
 RELEASE_NAME="elastic-stack"
-CHART_PATH="./elastic"
+CHART_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 echo ">>> Deploying Elasticsearch & Kibana..."
 helm upgrade --install $RELEASE_NAME $CHART_PATH -n $NAMESPACE --create-namespace

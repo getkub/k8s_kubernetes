@@ -58,8 +58,8 @@ Run:
 ```
 This deploys:
 
-* Elasticsearch 9.0.3 (3-node cluster)
-* Kibana 9.0.3 (1 replica)
+* Elasticsearch (3-node cluster)
+* Kibana (1 replica)
 
 ---
 

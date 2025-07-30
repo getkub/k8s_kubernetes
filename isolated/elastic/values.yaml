@@ -1,7 +1,6 @@
 elasticsearch:
   name: quickstart
-  version: 9.0.3
-  replicas: 3
+  replicas: 2
   storageSize: 20Gi
 
 kibana:
