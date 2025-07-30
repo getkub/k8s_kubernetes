@@ -69,6 +69,7 @@ This deploys:
 ### Check Elastic Pods
 ```
 kubectl get pods -n elastic-system
+kubectl get pods -n elastic-agent
 ```
 ### Check Elasticsearch Cluster Health
 
