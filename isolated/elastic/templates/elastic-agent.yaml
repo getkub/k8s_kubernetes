@@ -1,0 +1,35 @@
+{{- if .Values.agent.enabled }}
+apiVersion: agent.k8s.elastic.co/v1alpha1
+kind: Agent
+metadata:
+  name: elastic-agent
+  namespace: {{ .Values.agent.namespace | default "elastic-agent" }}
+spec:
+  version: {{ .Values.agent.version | quote }}
+  mode: {{ .Values.agent.mode | quote }}
+  fleetServerEnabled: false
+
+  daemonSet: {}  # or deployment: {}
+
+  elasticsearchRefs:
+    - name: {{ .Values.elasticsearch.name | default "quickstart" }}
+      namespace: elastic-system
+
+  config:
+    fleet:
+      kibana:
+        host: {{ .Values.kibana.host | quote }}
+      ca_trusted_fingerprint: ""
+
+  {{- if .Values.agent.elasticsearch.passwordFromSecret }}
+  secureSettings:
+    - secretName: {{ .Values.agent.elasticsearch.passwordFromSecret.name }}
+  {{- end }}
+
+  {{- if eq .Values.agent.mode "fleet" }}
+  kibanaRef:
+    name: kibana
+    namespace: elastic-system
+  {{- end }}
+
+{{- end }}

@@ -9,20 +9,14 @@ kibana:
   replicas: 1
   host: "https://kibana-kb-http.elastic-system.svc.cluster.local:5601"
 
-# agent:
-#   enabled: true
-#   mode: "fleet"  # or "standalone"
-#   namespace: "elastic-agent"
-#   elasticsearch:
-#     host: "https://quickstart-es-http.elastic-system.svc.cluster.local:9200"
-#     username: "elastic"
-#     passwordFromSecret:
-#       name: quickstart-es-elastic-user
-#       key: elastic
-#   kibana:
-#     host: "https://kibana-kb-http.elastic-system.svc.cluster.local:5601"
-#   fleet:
-#     serverPolicy: "k8s-policy"
-#     enrollmentTokenFromSecret:
-#       name: elastic-agent-enrollment-token
-#       key: token
+agent:
+  enabled: true
+  version: 9.1.0
+  mode: "standalone"
+  namespace: "elastic-agent"
+  elasticsearch:
+    host: "https://quickstart-es-http.elastic-system.svc.cluster.local:9200"
+    username: "elastic"
+    passwordFromSecret:
+      name: quickstart-es-elastic-user
+      key: elastic

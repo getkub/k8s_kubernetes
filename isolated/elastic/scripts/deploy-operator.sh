@@ -4,6 +4,9 @@ set -e
 NAMESPACE="elastic-system"
 RELEASE_NAME="elastic-operator"
 
+echo ">>> Installing ECK CRDs..."
+kubectl apply -f https://download.elastic.co/downloads/eck/2.12.1/crds.yaml
+
 helm repo add elastic https://helm.elastic.co
 helm repo update
 
