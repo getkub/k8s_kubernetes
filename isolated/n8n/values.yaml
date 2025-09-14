@@ -3,7 +3,7 @@ replicaCount: 1
 image:
   repository: n8nio/n8n
   pullPolicy: IfNotPresent
-  tag: "latest"
+  tag: "1.110.1"
 
 service:
   type: ClusterIP

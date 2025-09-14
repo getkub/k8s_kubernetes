@@ -1,0 +1,557 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b0cbcff5-bfcf-46a5-a386-65c4dd56c42f",
+              "name": "date",
+              "type": "string",
+              "value": "={{ $json.headers.date }}"
+            },
+            {
+              "id": "8c4155e4-bcc6-41dd-9582-346a57a7b997",
+              "name": "website",
+              "type": "string",
+              "value": "={{ $('Split Out').item.json.Websites }}"
+            },
+            {
+              "id": "9af72278-5b29-406a-b4c5-f47f3d805063",
+              "name": "IS_UP",
+              "type": "boolean",
+              "value": "={{ $json.statusCode <= 400  }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "790ad78a-a5b5-4f36-9e9b-96f98b6b2f22",
+      "name": "Calculate Status",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        976,
+        560
+      ],
+      "typeVersion": 3.3
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.Websites }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {}
+          },
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "e3c1d37f-99b3-44b0-86ee-a89059038cd6",
+      "name": "Perform Site Test",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        480,
+        560
+      ],
+      "typeVersion": 4.2,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "version": 1,
+                  "leftValue": "",
+                  "caseSensitive": true,
+                  "typeValidation": "strict"
+                },
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "id": "7191e7cb-f2e1-4288-aa68-21f6efefafc5",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    },
+                    "leftValue": "={{ $json.IS_UP }}",
+                    "rightValue": ""
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "UP"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "version": 1,
+                  "leftValue": "",
+                  "caseSensitive": true,
+                  "typeValidation": "strict"
+                },
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "id": "e07edddc-70be-46ed-9f5c-7fba0ed52bc3",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "false",
+                      "singleValue": true
+                    },
+                    "leftValue": "={{ $json.IS_UP }}",
+                    "rightValue": ""
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "DOWN"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c8e7f920-0494-46d0-b5b2-90990eb39cff",
+      "name": "Status Router",
+      "type": "n8n-nodes-base.switch",
+      "position": [
+        1216,
+        560
+      ],
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "Websites",
+        "options": {}
+      },
+      "id": "cafe18ce-93ec-43e9-8ed8-c43f0de4809a",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "position": [
+        288,
+        560
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "72b729c6-e0af-46f0-955f-c649e9d397bc",
+              "name": "Websites",
+              "type": "string",
+              "value": "=https://mywebsite1.com\nhttps://mywebsite2.com\nhttps://mywebsite3.com"
+            },
+            {
+              "id": "25457f32-6440-404d-8e99-eb772e552982",
+              "name": "wait_secs",
+              "type": "number",
+              "value": 5
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "56d4bc02-2c1c-4f06-b335-76241dabce4e",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -112,
+        560
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ce076f11-d745-43a9-8069-a55759ceb0c9",
+              "name": "Websites",
+              "type": "array",
+              "value": "={{\n  // we split by line, and only keep non-empty lines\n  $json.Websites.split('\\n').filter((url) => url)\n}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "493aeeb5-792d-4721-b68b-1e9c78575c69",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        80,
+        560
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {},
+      "id": "7cde23ba-bff1-4da2-beb7-153474ccd5c4",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        768,
+        560
+      ],
+      "typeVersion": 3.2
+    },
+    {
+      "parameters": {
+        "amount": "={{ $('Config').item.json.wait_secs }}"
+      },
+      "id": "8c175b1f-840e-4ce0-aaaf-b8d19dbfe970",
+      "name": "Wait",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        1472,
+        592
+      ],
+      "webhookId": "eeedbd07-c2f9-409f-b0b5-a3a764d9d51e",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b0cbcff5-bfcf-46a5-a386-65c4dd56c42f",
+              "name": "date",
+              "type": "string",
+              "value": "={{ $json.headers.date }}"
+            },
+            {
+              "id": "8c4155e4-bcc6-41dd-9582-346a57a7b997",
+              "name": "website",
+              "type": "string",
+              "value": "={{ $('Split Out').item.json.Websites }}"
+            },
+            {
+              "id": "9af72278-5b29-406a-b4c5-f47f3d805063",
+              "name": "IS_UP",
+              "type": "boolean",
+              "value": "={{ $json.statusCode <= 400  }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b4e5f8fa-f066-49e8-8672-2f6d63191b53",
+      "name": "Calculate Status1",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        976,
+        832
+      ],
+      "typeVersion": 3.3
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.Websites }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {}
+          },
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "35d88c90-2c4a-40b3-93f3-b0e6cbc92029",
+      "name": "Perform Site Test1",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        480,
+        832
+      ],
+      "typeVersion": 4.2,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {},
+      "id": "3208df30-0dad-4e2e-830b-9455049fba9c",
+      "name": "Merge1",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        752,
+        832
+      ],
+      "typeVersion": 3.2
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "version": 1,
+                  "leftValue": "",
+                  "caseSensitive": true,
+                  "typeValidation": "strict"
+                },
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "id": "7191e7cb-f2e1-4288-aa68-21f6efefafc5",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    },
+                    "leftValue": "={{ $json.IS_UP }}",
+                    "rightValue": ""
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "UP"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "version": 1,
+                  "leftValue": "",
+                  "caseSensitive": true,
+                  "typeValidation": "strict"
+                },
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "id": "e07edddc-70be-46ed-9f5c-7fba0ed52bc3",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "false",
+                      "singleValue": true
+                    },
+                    "leftValue": "={{ $json.IS_UP }}",
+                    "rightValue": ""
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "DOWN"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4e0a2c83-3f2c-4d79-98d7-a9dc3faa36df",
+      "name": "Status Router1",
+      "type": "n8n-nodes-base.switch",
+      "position": [
+        1152,
+        832
+      ],
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "content": "## 👇👇 Add your websites here",
+        "color": 3
+      },
+      "id": "b0957c8d-6099-40b3-945f-e9dbf295d534",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -384,
+        464
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -496,
+        560
+      ],
+      "id": "f50564e5-7f41-45d0-94f8-352634bb9915",
+      "name": "When clicking ‘Execute workflow’"
+    }
+  ],
+  "connections": {
+    "Calculate Status": {
+      "main": [
+        [
+          {
+            "node": "Status Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Perform Site Test": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Status Router": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Perform Site Test",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Calculate Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Perform Site Test1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Status1": {
+      "main": [
+        [
+          {
+            "node": "Status Router1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Perform Site Test1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Calculate Status1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Status Router1": {
+      "main": [
+        [],
+        []
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "08f4d0af43ee32e0b39587e6ae3024fa3e639e073af0aa4fac6c67e6f2179cda"
+  }
+}
