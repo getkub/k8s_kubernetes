@@ -23,6 +23,19 @@ spec:
           env:
             - name: N8N_BASIC_AUTH_ACTIVE
               value: "false"
+{{- if .Values.config.env }}
+{{- range .Values.config.env }}
+            - name: {{ .name }}
+{{- if .value }}
+              value: {{ .value | quote }}
+{{- else if .valueFrom }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .valueFrom.secretKeyRef.name }}
+                  key: {{ .valueFrom.secretKeyRef.key }}
+{{- end }}
+{{- end }}
+{{- end }}
           volumeMounts:
             - name: n8n-data
               mountPath: /home/node/.n8n

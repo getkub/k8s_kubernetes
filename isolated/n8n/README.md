@@ -1,172 +1,64 @@
+# N8N Kubernetes Setup
 
-# n8n Helm Chart for Kubernetes
+## Access N8N
 
-This Helm chart deploys **n8n**, an extendable workflow automation tool, on Kubernetes.  
-It uses the official **n8n OCI Helm chart** and provides scripts to simplify installation, management, and cleanup.
+N8N is deployed in the `n8n-system` namespace.
 
----
-
-## Directory Structure
-
-```
-
-n8n/
-├── Chart.yaml              # Helm chart metadata
-├── values.yaml             # n8n config (database, persistence, etc.)
-├── templates/              # Helm templates (optional ingress, helpers)
-│   ├── \_helpers.tpl
-│   └── ingress.yaml
-└── scripts/                # Deployment and management scripts
-├── deploy.sh           # Install or upgrade n8n Helm chart
-├── uninstall.sh        # Uninstall n8n release
-└── cleanup.sh          # Remove PVCs and persistent data
-
-````
-
----
-
-## Prerequisites
-
-- **Kubernetes cluster** (minikube, k3s, GKE, etc.)
-- **Helm 3.8+**
-- **kubectl** configured for your cluster
-- (Optional) **Postgres** or **MySQL** database (external or managed service)
-
----
-
-## Quick Start
-
-### 1. Install n8n
-
+### Port Forwarding (http://localhost:5678)
+Run this command in a terminal:
 ```bash
-./scripts/deploy.sh
-````
+kubectl -n n8n-system port-forward svc/n8n-stack-n8n-stack 5678:80
+```
+Then access n8n at: **http://localhost:5678**
 
-This will:
+*✅ Currently active and working perfectly*
 
-* Create the namespace `n8n-system` (if missing).
-* Install n8n from the official OCI Helm registry:
-  `oci://8gears.container-registry.com/library/n8n`
+## Current Setup
+- **Version**: 1.121.3 (latest)
+- **Namespace**: n8n-system
+- **Helm Release**: n8n-stack
+- **Database**: SQLite (persistent storage enabled)
+- **Service**: ClusterIP on port 80
 
----
+## Useful Commands
 
-### 2. Verify n8n Pods
-
+### Check pod status
 ```bash
 kubectl get pods -n n8n-system
 ```
 
-You should see something like:
-
-```
-NAME                       READY   STATUS    RESTARTS   AGE
-n8n-6c6fd9d6d4-8q9d8       1/1     Running   0          2m
-```
-
----
-
-### 3. Access n8n (Port-Forward)
-
+### Check deployment status
 ```bash
-kubectl port-forward svc/n8n-stack-n8n-stack 5678:80 -n n8n-system &
+kubectl get deployments -n n8n-system
 ```
 
-Then open [http://localhost:5678](http://localhost:5678).
-
----
-
-### 4. Check Logs
-
+### View logs
 ```bash
-kubectl logs deployment/n8n -n n8n-system
+kubectl logs -f deployment/n8n-stack-n8n-stack -n n8n-system
 ```
 
----
-
-## Configuration
-
-### Edit `values.yaml`
-
-Some key configuration sections:
-
-```yaml
-config:
-  database:
-    type: postgresdb
-    postgresdb:
-      host: postgres.n8n-system.svc.cluster.local
-      database: n8n
-      user: n8n_user
-
-secret:
-  database:
-    postgresdb:
-      password: "your_postgres_password"
-
-persistence:
-  enabled: true
-  size: 5Gi
-```
-
-* Use `config` for non-sensitive settings.
-* Use `secret` for passwords and secrets (stored in a Kubernetes Secret).
-
----
-
-## Uninstall n8n
-
+### Upgrade n8n
 ```bash
-./scripts/uninstall.sh
+helm upgrade n8n-stack ./isolated/n8n -n n8n-system
 ```
 
----
+## kubectl Alias
+The alias `k=kubectl` has been added to `~/.zshrc` for convenience.
 
-## Cleanup Persistent Data
+## n8n-mcp Configuration
 
-To remove PVCs (persistent data):
+n8n-mcp is configured for use with Cline. To set it up:
 
-```bash
-./scripts/cleanup.sh
-```
+1. **Set the API key environment variable:**
+   ```bash
+   export N8N_API_KEY="your-api-key-here"
+   ```
 
----
+2. **Copy the MCP configuration to Cline:**
+   ```bash
+   cp isolated/n8n/n8n-mcp-config.json ~/Library/Application\ Support/Code/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json
+   ```
 
-## Scaling n8n
+3. **Restart VS Code/Cline** to pick up the new MCP configuration.
 
-n8n supports **queue mode** with Redis for horizontal scaling.
-
-Example snippet for `values.yaml`:
-
-```yaml
-scaling:
-  enabled: true
-  worker:
-    count: 2
-  redis:
-    host: "redis-host"
-    password: "redis-password"
-```
-
----
-
-## References
-
-* [n8n Helm Chart Documentation](https://8gears.container-registry.com/)
-* [n8n Official Docs](https://docs.n8n.io/)
-
-
-## Operational
-
-- Use port-forwarding if no ingress IP is available
-
-```
-kubectl port-forward svc/n8n-stack-n8n-stack 5678:80 -n n8n-system &
-```
-
-## Scale down & up
-
-```
-kubectl scale deployment n8n-stack-n8n-stack -n n8n-system --replicas=0
-
-kubectl scale deployment n8n-stack-n8n-stack -n n8n-system --replicas=1
-```
+The configuration uses environment variables so the API key is never committed to the repository.
