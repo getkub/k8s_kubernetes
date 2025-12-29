@@ -11,7 +11,7 @@ kibana:
 
 agent:
   enabled: true
-  version: 9.1.0
+  version: 9.2.2
   mode: "standalone"
   namespace: "elastic-agent"
   elasticsearch:

@@ -3,4 +3,4 @@ name: elastic-stack
 description: Helm chart for Elasticsearch, Kibana, and Beats custom resources
 type: application
 version: 0.1.0
-appVersion: "9.1.0"
+appVersion: "9.2.2"
