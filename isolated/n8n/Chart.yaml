@@ -1,6 +1,12 @@
 apiVersion: v2
 name: n8n-stack
-description: Helm chart for deploying n8n (workflow automation tool)
+description: Helm chart for deploying n8n (workflow automation tool) with Redis
 type: application
 version: 0.1.0
-appVersion: "1.72.0" # or the n8n version you want
+appVersion: "2.3.0"
+
+dependencies:
+  - name: redis
+    version: "18.1.6"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: redis.enabled

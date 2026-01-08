@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "n8n-stack.fullname" . }}-redis
+  labels:
+    app: {{ include "n8n-stack.name" . }}-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "n8n-stack.name" . }}-redis
+  template:
+    metadata:
+      labels:
+        app: {{ include "n8n-stack.name" . }}-redis
+    spec:
+      containers:
+        - name: redis
+          image: "{{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.redis.service.port }}
+          command:
+            - redis-server
+            - --appendonly
+            - "yes"
+{{- if .Values.redis.auth.enabled }}
+            - --requirepass
+            - {{ .Values.redis.auth.password | quote }}
+{{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "n8n-stack.fullname" . }}-redis
+  labels:
+    app: {{ include "n8n-stack.name" . }}-redis
+spec:
+  selector:
+    app: {{ include "n8n-stack.name" . }}-redis
+  ports:
+    - port: {{ .Values.redis.service.port }}
+      targetPort: {{ .Values.redis.service.port }}

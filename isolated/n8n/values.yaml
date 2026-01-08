@@ -3,7 +3,7 @@ replicaCount: 1
 image:
   repository: n8nio/n8n
   pullPolicy: IfNotPresent
-  tag: "1.121.3"
+  tag: "2.3.0"
 
 service:
   type: ClusterIP
@@ -34,5 +34,16 @@ secret:
   data:
     encryption-key: ""  # Will be set via --set
     jwt-secret: ""      # Will be set via --set
+
+redis:
+  enabled: true  # Use simple Redis deployment instead of Bitnami chart
+  image:
+    repository: redis
+    tag: "8.2.3-alpine"
+  service:
+    port: 6379
+  auth:
+    enabled: false  # Set to true to enable Redis authentication
+    password: ""    # Redis password (only used if auth.enabled=true)
 
 resources: {}
