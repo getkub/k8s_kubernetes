@@ -47,3 +47,12 @@ Icon
 .Trashes
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
+
+# Certificates (keep private keys secure)
+certs/ca/ca.key
+certs/ca/ca.srl
+certs/server/server.key
+certs/server/server.csr
+certs/splunk/splunk.key
+certs/splunk/splunk.csr
+certs/k8s-tls-secret-populated.yaml

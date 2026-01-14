@@ -17,7 +17,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://192.168.31.175:8089/services/mcp",
+        "url": "https://host.k3d.internal:8089/services/mcp",
         "sendHeaders": true,
         "headerParameters": {
           "parameter": [
@@ -34,9 +34,7 @@
         "sendBody": true,
         "bodyContentType": "json",
         "body": "={{\"jsonrpc\": \"2.0\", \"id\": {{$now.format('x')}}, \"method\": \"tools/call\", \"params\": {{\"name\": \"{{$json.tool || 'get_splunk_info'}}\", \"arguments\": {{$json.args || {}}}}}}",
-        "options": {
-          "allowUnauthorizedCerts": true
-        }
+        "options": {}
       },
       "id": "mcp-call",
       "name": "Call MCP Tool",
