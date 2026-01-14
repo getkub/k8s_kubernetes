@@ -32,6 +32,7 @@ logs/
 ## Custom removal
 *trend.yml
 *trend.yaml
+.vscode
 
 # macOS
 .DS_Store
