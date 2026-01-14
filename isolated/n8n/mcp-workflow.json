@@ -1,0 +1,95 @@
+{
+  "name": "Splunk MCP Tools",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "splunk-mcp",
+        "options": {}
+      },
+      "id": "webhook-mcp",
+      "name": "MCP Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "webhookId": "splunk-mcp-webhook"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://192.168.31.175:8089/services/mcp",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameter": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer {{$credentials.splunkMcpToken}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyContentType": "json",
+        "body": "={{\"jsonrpc\": \"2.0\", \"id\": {{$now.format('x')}}, \"method\": \"tools/call\", \"params\": {{\"name\": \"{{$json.tool || 'get_splunk_info'}}\", \"arguments\": {{$json.args || {}}}}}}",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "id": "mcp-call",
+      "name": "Call MCP Tool",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "result",
+              "value": "={{ $json.result }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "extract-result",
+      "name": "Extract Result",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [680, 300]
+    }
+  ],
+  "connections": {
+    "MCP Webhook": {
+      "main": [
+        [
+          {
+            "node": "Call MCP Tool",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call MCP Tool": {
+      "main": [
+        [
+          {
+            "node": "Extract Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "staticData": null,
+  "settings": {},
+  "meta": {
+    "instanceId": "43ff53e24be6503dc4d60eef7def9a4e3e2f06f971c8d03e8aabb0a230fe1d57"
+  }
+}

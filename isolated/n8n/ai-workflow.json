@@ -3,18 +3,69 @@
     {
       "parameters": {
         "httpMethod": "POST",
-        "path": "alert-webhook",
+        "path": "splunk-mcp",
         "options": {}
       },
-      "id": "1160b827-885a-41c6-a1b4-ce294cbde270",
-      "name": "Alert Webhook",
+      "id": "splunk-webhook",
+      "name": "Splunk MCP Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
         -144,
         96
       ],
-      "webhookId": "alert-webhook-001"
+      "webhookId": "splunk-mcp-webhook"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://192.168.31.175:8089/services/mcp",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameter": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer {{$credentials.splunkMcpToken}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameter": [
+            {
+              "name": "jsonrpc",
+              "value": "2.0"
+            },
+            {
+              "name": "id",
+              "value": "={{ $now.format('x') }}"
+            },
+            {
+              "name": "method",
+              "value": "tools/call"
+            },
+            {
+              "name": "params",
+              "value": "={{ { name: $json.tool, arguments: $json.args || {} } }}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "id": "mcp-request",
+      "name": "MCP Tool Call",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        96,
+        96
+      ]
     },
     {
       "parameters": {
