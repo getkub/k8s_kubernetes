@@ -1,0 +1,723 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        992,
+        1584
+      ],
+      "id": "965557e7-d92c-4906-9d09-b842d530b08b",
+      "name": "When chat message received",
+      "webhookId": "splunk-mcp-agent-v2"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are the Primary Query Agent in a two-stage security analysis workflow. Your job is to execute the initial security query provided by the user and identify key findings and anomalies.\n\n## AVAILABLE TOOLS\n\n### AI-Powered SPL Tools (Use these for natural language queries)\n- generate_spl: Convert natural language to SPL queries\n- explain_spl: Explain SPL queries in plain English\n- optimize_spl: Improve SPL query performance\n- ask_splunk_question: Get help with Splunk concepts and features\n\n### Data Query Tools\n- run_splunk_query: Execute SPL queries (max 1 minute, 1000 events)\n- get_metadata: Get hosts, sources, sourcetypes from indexes\n\n### Instance Information Tools\n- get_splunk_info: Get Splunk version, hardware, status\n- get_indexes: List all available indexes\n- get_index_info: Get detailed info about a specific index\n\n### User & Access Tools\n- get_user_info: Get current user details and permissions\n- get_user_list: List all Splunk users\n\n### Knowledge Objects Tools\n- get_knowledge_objects: Retrieve saved searches, alerts, field extractions, lookups, macros, data models, etc.\n- get_kv_store_collections: Get KV Store collection statistics\n\n## YOUR TASK\n\n1. Execute the user's initial query (e.g., brute force detection query like 'index=firewall action=blocked dest_port=22 | stats count BY src_ip | where count > 5')\n2. Identify key findings and anomalies from the results\n3. Output structured results with investigation targets\n\nFocus on finding suspicious patterns, high counts, unusual activities, etc.\n\nOutput your findings in a structured format that the Deep Analysis Agent can easily parse:\n\n**PRIMARY FINDINGS:**\n- Finding 1: [description]\n- Finding 2: [description]\n- Investigation Targets: [list of IPs, users, etc.]\n\n**STRUCTURED DATA:**\n[JSON or structured text with key findings]",
+          "maxIterations": 10,
+          "returnIntermediateSteps": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1216,
+        1584
+      ],
+      "id": "45440613-a3ed-464d-8dfc-8b96ece349b7",
+      "name": "Primary Query Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-lite",
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1216,
+        1776
+      ],
+      "id": "fed99e28-a044-45ac-b2c7-2070e05a6028",
+      "name": "Primary Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "gSmlsh9b30a8Q51F",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Output from previous stage: {{ $json.output }}\n{{ $json.intermediateSteps[0].action.messageLog[0].kwargs.tool_calls }}",
+        "options": {
+          "systemMessage": "You are the Deep Analysis Agent in a two-stage security analysis workflow. You receive the structured findings from the Primary Query Agent and perform deep-dive investigations.\n\n## AVAILABLE TOOLS\n\n### AI-Powered SPL Tools (Use these for natural language queries)\n- generate_spl: Convert natural language to SPL queries\n- explain_spl: Explain SPL queries in plain English\n- optimize_spl: Improve SPL query performance\n- ask_splunk_question: Get help with Splunk concepts and features\n\n### Data Query Tools\n- run_splunk_query: Execute SPL queries (max 1 minute, 1000 events)\n- get_metadata: Get hosts, sources, sourcetypes from indexes\n\n### Instance Information Tools\n- get_splunk_info: Get Splunk version, hardware, status\n- get_indexes: List all available indexes\n- get_index_info: Get detailed info about a specific index\n\n### User & Access Tools\n- get_user_info: Get current user details and permissions\n- get_user_list: List all Splunk users\n\n### Knowledge Objects Tools\n- get_knowledge_objects: Retrieve saved searches, alerts, field extractions, lookups, macros, data models, etc.\n- get_kv_store_collections: Get KV Store collection statistics\n\n## YOUR TASK\n\n1. Receive primary findings automatically from the previous agent\n2. Perform deep-dive investigations:\n   - Drill down into suspicious IPs identified\n   - Build timeline of related events\n   - Search for correlated indicators across all indexes\n   - Check for similar patterns and existing alerts\n   - Use get_knowledge_objects to check for existing security alerts\n\n3. Generate comprehensive security analysis\n\nOutput detailed analysis including:\n- Deep investigation results\n- Timeline analysis\n- Correlated findings\n- Threat assessment\n- Recommendations for the final report\n\n**DEEP ANALYSIS RESULTS:**\n[Comprehensive analysis based on primary findings]",
+          "maxIterations": 15,
+          "returnIntermediateSteps": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1984,
+        1344
+      ],
+      "id": "03af9eaf-6d87-435c-8ec1-159f8a8894db",
+      "name": "Deep Analysis Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-lite",
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1984,
+        1536
+      ],
+      "id": "38835467-eb7b-4427-bc14-1d5fb63cf866",
+      "name": "Deep Analysis Gemini Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "gSmlsh9b30a8Q51F",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Deep Analysis Results: {{ $json.output }}\n\nPrimary Findings Context: {{ $json.intermediateSteps }}\n\nPlease generate a comprehensive security report in markdown format combining all the analysis results.",
+        "options": {
+          "systemMessage": "You are the Report Generation Agent. You receive the outputs from both the Primary Query Agent and Deep Analysis Agent, then format them into a professional markdown security report.\n\n## YOUR TASK\n\n1. Combine both agent outputs (primary findings and deep analysis)\n2. Format as professional markdown report\n3. Include timestamps and metadata\n4. Structure the report with:\n   - Executive Summary\n   - Threat Details and Severity\n   - Indicators of Compromise\n   - Impact Assessment\n   - Actionable Recommendations\n   - Monitoring Queries\n\nDo not use any tools - just format the provided data into a comprehensive report.\n\n**REPORT FORMAT:**\n\n# Security Analysis Report\n\n**Generated:** [timestamp]\n**Analysis Period:** [time range]\n**Primary Query:** [original query]\n\n## Executive Summary\n[High-level overview of findings]\n\n## Threat Details\n[Detailed description of identified threats]\n\n## Indicators of Compromise\n[List of IOCs found]\n\n## Timeline Analysis\n[Chronological events]\n\n## Impact Assessment\n[Potential impact and affected systems]\n\n## Recommendations\n[Actionable steps and monitoring queries]\n\n## Metadata\n[Additional technical details]",
+          "maxIterations": 5,
+          "returnIntermediateSteps": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2336,
+        1344
+      ],
+      "id": "f693a6d7-b87b-4a2d-ad98-e0a150ef69e8",
+      "name": "Report Generation Agent"
+    },
+    {
+      "parameters": {
+        "options": {
+          "temperature": 0.1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2336,
+        1536
+      ],
+      "id": "cf1c319b-5a97-47b0-8318-08a38e7fb1e9",
+      "name": "Report Gemini Model",
+      "retryOnFail": true,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "gSmlsh9b30a8Q51F",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://splunk.local:8089/services/mcp",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ \"jsonrpc\": \"2.0\", \"id\": Date.now(), \"method\": \"tools/call\", \"params\": { \"name\": \"generate_spl\", \"arguments\": { \"query\": $json.query } } }) }}",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.3,
+      "position": [
+        1600,
+        1344
+      ],
+      "id": "b9ba7ebe-a93a-45d2-a5d6-e72f665a6aef",
+      "name": "generate_spl",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Vi007bsRp8jupQLv",
+          "name": "splunk mcp header auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://splunk.local:8089/services/mcp",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ \"jsonrpc\": \"2.0\", \"id\": Date.now(), \"method\": \"tools/call\", \"params\": { \"name\": \"explain_spl\", \"arguments\": { \"query\": $json.query } } }) }}",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.3,
+      "position": [
+        1600,
+        1456
+      ],
+      "id": "85160237-47a6-48cc-86bd-fb69bc91c146",
+      "name": "explain_spl",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Vi007bsRp8jupQLv",
+          "name": "splunk mcp header auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://splunk.local:8089/services/mcp",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ \"jsonrpc\": \"2.0\", \"id\": Date.now(), \"method\": \"tools/call\", \"params\": { \"name\": \"optimize_spl\", \"arguments\": { \"query\": $json.query } } }) }}",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.3,
+      "position": [
+        1600,
+        1552
+      ],
+      "id": "7320c927-e9a4-47ec-b371-bbe46efd2478",
+      "name": "optimize_spl",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Vi007bsRp8jupQLv",
+          "name": "splunk mcp header auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://splunk.local:8089/services/mcp",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ \"jsonrpc\": \"2.0\", \"id\": Date.now(), \"method\": \"tools/call\", \"params\": { \"name\": \"ask_splunk_question\", \"arguments\": { \"question\": $json.question } } }) }}",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.3,
+      "position": [
+        1600,
+        1648
+      ],
+      "id": "6ab54972-659a-41d4-a7fd-5d5aa282387a",
+      "name": "ask_splunk_question",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Vi007bsRp8jupQLv",
+          "name": "splunk mcp header auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://splunk.local:8089/services/mcp",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ \"jsonrpc\": \"2.0\", \"id\": Date.now(), \"method\": \"tools/call\", \"params\": { \"name\": \"run_splunk_query\", \"arguments\": { \"query\": $json.query || \"search index=_internal | head 10\", \"earliest\": $json.earliest || \"-24h\", \"latest\": $json.latest || \"now\" } } }) }}",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.3,
+      "position": [
+        1600,
+        1744
+      ],
+      "id": "89392b44-323f-4d31-9fa4-5458ac5671b1",
+      "name": "run_splunk_query",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Vi007bsRp8jupQLv",
+          "name": "splunk mcp header auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://splunk.local:8089/services/mcp",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ \"jsonrpc\": \"2.0\", \"id\": Date.now(), \"method\": \"tools/call\", \"params\": { \"name\": \"get_splunk_info\", \"arguments\": {} } }) }}",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.3,
+      "position": [
+        1600,
+        1856
+      ],
+      "id": "eb67e18c-3385-45cb-992e-157d34dca233",
+      "name": "get_splunk_info",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Vi007bsRp8jupQLv",
+          "name": "splunk mcp header auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://splunk.local:8089/services/mcp",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ \"jsonrpc\": \"2.0\", \"id\": Date.now(), \"method\": \"tools/call\", \"params\": { \"name\": \"get_indexes\", \"arguments\": {} } }) }}",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.3,
+      "position": [
+        1600,
+        1952
+      ],
+      "id": "965059d9-7bc7-4048-926d-86845a3891e7",
+      "name": "get_indexes",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Vi007bsRp8jupQLv",
+          "name": "splunk mcp header auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://splunk.local:8089/services/mcp",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ \"jsonrpc\": \"2.0\", \"id\": Date.now(), \"method\": \"tools/call\", \"params\": { \"name\": \"get_index_info\", \"arguments\": { \"index_name\": $json.index_name } } }) }}",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.3,
+      "position": [
+        1808,
+        1344
+      ],
+      "id": "bb1cecd0-98dc-4265-a580-bf61b29339cb",
+      "name": "get_index_info",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Vi007bsRp8jupQLv",
+          "name": "splunk mcp header auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://splunk.local:8089/services/mcp",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ \"jsonrpc\": \"2.0\", \"id\": Date.now(), \"method\": \"tools/call\", \"params\": { \"name\": \"get_metadata\", \"arguments\": Object.assign({ \"index\": $json.index, \"metadata_type\": $json.metadata_type }, $json.earliest ? { \"earliest\": $json.earliest } : {}, $json.latest ? { \"latest\": $json.latest } : {}) } }) }}",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.3,
+      "position": [
+        1808,
+        1456
+      ],
+      "id": "b7a41388-ce80-41ac-a29e-1989e3369f6f",
+      "name": "get_metadata",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Vi007bsRp8jupQLv",
+          "name": "splunk mcp header auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://splunk.local:8089/services/mcp",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ \"jsonrpc\": \"2.0\", \"id\": Date.now(), \"method\": \"tools/call\", \"params\": { \"name\": \"get_user_info\", \"arguments\": {} } }) }}",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.3,
+      "position": [
+        1808,
+        1552
+      ],
+      "id": "ff8da997-f21b-45f2-be20-7ddcc4189114",
+      "name": "get_user_info",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Vi007bsRp8jupQLv",
+          "name": "splunk mcp header auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://splunk.local:8089/services/mcp",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ \"jsonrpc\": \"2.0\", \"id\": Date.now(), \"method\": \"tools/call\", \"params\": { \"name\": \"get_user_list\", \"arguments\": {} } }) }}",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.3,
+      "position": [
+        1808,
+        1648
+      ],
+      "id": "06366a50-32a6-46c1-ad59-b6c44f3c626d",
+      "name": "get_user_list",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Vi007bsRp8jupQLv",
+          "name": "splunk mcp header auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://splunk.local:8089/services/mcp",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ \"jsonrpc\": \"2.0\", \"id\": Date.now(), \"method\": \"tools/call\", \"params\": { \"name\": \"get_kv_store_collections\", \"arguments\": {} } }) }}",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.3,
+      "position": [
+        1920,
+        1840
+      ],
+      "id": "abb84f62-1d9e-48ea-ad40-87b1badc05be",
+      "name": "get_kv_store_collections",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Vi007bsRp8jupQLv",
+          "name": "splunk mcp header auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://splunk.local:8089/services/mcp",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ \"jsonrpc\": \"2.0\", \"id\": Date.now(), \"method\": \"tools/call\", \"params\": { \"name\": \"get_knowledge_objects\", \"arguments\": { \"type\": $json.type || $json.object_type } } }) }}",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.3,
+      "position": [
+        1808,
+        1856
+      ],
+      "id": "9fd756da-bfa7-4809-a392-8a6902c5ebb3",
+      "name": "get_knowledge_objects",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Vi007bsRp8jupQLv",
+          "name": "splunk mcp header auth"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Primary Query Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Primary Query Agent": {
+      "main": [
+        [
+          {
+            "node": "Deep Analysis Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Primary Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Primary Query Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deep Analysis Agent": {
+      "main": [
+        [
+          {
+            "node": "Report Generation Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deep Analysis Gemini Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Deep Analysis Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Report Generation Agent": {
+      "main": [
+        []
+      ]
+    },
+    "Report Gemini Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Report Generation Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generate_spl": {
+      "ai_tool": [
+        [
+          {
+            "node": "Primary Query Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "explain_spl": {
+      "ai_tool": [
+        [
+          {
+            "node": "Primary Query Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "optimize_spl": {
+      "ai_tool": [
+        [
+          {
+            "node": "Primary Query Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ask_splunk_question": {
+      "ai_tool": [
+        [
+          {
+            "node": "Primary Query Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "run_splunk_query": {
+      "ai_tool": [
+        [
+          {
+            "node": "Primary Query Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_splunk_info": {
+      "ai_tool": [
+        [
+          {
+            "node": "Primary Query Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_indexes": {
+      "ai_tool": [
+        [
+          {
+            "node": "Primary Query Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_index_info": {
+      "ai_tool": [
+        [
+          {
+            "node": "Primary Query Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_metadata": {
+      "ai_tool": [
+        [
+          {
+            "node": "Primary Query Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_user_info": {
+      "ai_tool": [
+        [
+          {
+            "node": "Primary Query Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_user_list": {
+      "ai_tool": [
+        [
+          {
+            "node": "Primary Query Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_kv_store_collections": {
+      "ai_tool": [
+        [
+          {
+            "node": "Primary Query Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_knowledge_objects": {
+      "ai_tool": [
+        [
+          {
+            "node": "Primary Query Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "instanceId": "08f4d0af43ee32e0b39587e6ae3024fa3e639e073af0aa4fac6c67e6f2179cda"
+  }
+}

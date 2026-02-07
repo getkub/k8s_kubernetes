@@ -17,7 +17,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://host.k3d.internal:8089/services/mcp",
+        "url": "https://splunk.local:8089/services/mcp",
         "sendHeaders": true,
         "headerParameters": {
           "parameter": [

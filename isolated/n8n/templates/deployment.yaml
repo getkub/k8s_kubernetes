@@ -14,7 +14,6 @@ spec:
       labels:
         app: {{ include "n8n-stack.name" . }}
     spec:
-      hostNetwork: true
       containers:
         - name: n8n
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

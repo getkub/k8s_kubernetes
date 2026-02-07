@@ -3,4 +3,4 @@ name: n8n-stack
 description: Helm chart for deploying n8n (workflow automation tool) with Redis
 type: application
 version: 0.1.0
-appVersion: "2.3.0"
+appVersion: "2.6.3"
