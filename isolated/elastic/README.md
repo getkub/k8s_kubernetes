@@ -88,6 +88,8 @@ echo "Elastic password: $PASSWORD"
 1. Port-forward Kibana service:
 ```
 kubectl port-forward service/kibana-kb-http 5601 -n elastic-system &
+
+kubectl port-forward service/quickstart-es-http 9200:9200 -n elastic-system &
 ```
 2. Open [https://localhost:5601](https://localhost:5601) in your browser
 3. Login using username: elastic and the password from above
