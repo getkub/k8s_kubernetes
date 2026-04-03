@@ -8,7 +8,24 @@ ES_SECRET_NS="elastic-system"
 TMPFILE=$(mktemp)
 
 echo "🔐 Extracting 'elastic' password from Elasticsearch secret..."
-PASSWORD=$(kubectl get secret quickstart-es-elastic-user -n "$ES_SECRET_NS" -o jsonpath="{.data.elastic}" | base64 --decode)
+echo "  Waiting for secret $ES_SECRET_NAME to be created by Elasticsearch..."
+
+# Wait for the secret to exist (ECK operator creates it when Elasticsearch is deployed)
+for i in {1..60}; do
+  if kubectl get secret "$ES_SECRET_NAME" -n "$ES_SECRET_NS" >/dev/null 2>&1; then
+    echo "  Secret found!"
+    break
+  fi
+  if [ $i -eq 60 ]; then
+    echo "❌ ERROR: Secret $ES_SECRET_NAME not found after 60 seconds."
+    echo "   Make sure Elasticsearch is deployed first by running: ./scripts/deploy.sh"
+    exit 1
+  fi
+  echo "  Waiting... (attempt $i/60)"
+  sleep 1
+done
+
+PASSWORD=$(kubectl get secret "$ES_SECRET_NAME" -n "$ES_SECRET_NS" -o jsonpath="{.data.elastic}" | base64 --decode)
 
 echo "🔐 Creating Kubernetes secret for Elastic password..."
 kubectl delete secret "$ES_SECRET_NAME" -n "$ES_SECRET_NS" --ignore-not-found

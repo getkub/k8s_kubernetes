@@ -54,8 +54,8 @@ OR
 
 Run:
 ```
-./scripts/create-secrets.sh
 ./scripts/deploy.sh
+./scripts/create-secrets.sh
 ```
 This deploys:
 
