@@ -12,7 +12,8 @@ kibana:
 agent:
   enabled: true
   version: 9.3.1
-  mode: "standalone"
+  mode: "fleet"
+  fleetServerEnabled: true
   namespace: "elastic-agent"
   elasticsearch:
     host: "https://quickstart-es-http.elastic-system.svc.cluster.local:9200"

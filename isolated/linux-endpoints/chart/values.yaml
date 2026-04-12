@@ -1,0 +1,23 @@
+replicaCount: 2
+
+image:
+  repository: linux-endpoint-simulator
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+nameOverride: ""
+fullnameOverride: ""
+
+endpointConfig:
+  elasticsearch:
+    hosts: '["https://quickstart-es-http.elastic-system.svc.cluster.local:9200"]'
+    username: "elastic"
+    # We will mount the password from the secret created by ECK
+    passwordSecretName: "quickstart-es-elastic-user"
+    passwordSecretKey: "elastic"
+  
+  # Set up data collection for syslogs
+  collection:
+    systemLogs: true
+    authLogs: true

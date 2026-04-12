@@ -1,0 +1,6 @@
+apiVersion: v2
+name: linux-endpoints
+description: Helm chart to deploy Linux endpoint simulators with Elastic Agent installed
+type: application
+version: 0.1.0
+appVersion: "1.0"

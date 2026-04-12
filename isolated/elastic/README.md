@@ -83,15 +83,15 @@ PASSWORD=$(kubectl get secret quickstart-es-elastic-user -n elastic-system -o go
 echo "Elastic password: $PASSWORD"
 ```
 
-### Access Kibana
+### Access Kibana and Elasticsearch
 
-1. Port-forward Kibana service:
+1. Start the robust background port-forwarder (this prevents Kubernetes connection timeouts automatically):
 ```
-kubectl port-forward service/kibana-kb-http 5601 -n elastic-system &
+./scripts/port-forward.sh
+```
+*(Keep this script running in a background terminal. You can safely stop it by pressing `Ctrl+C`)*
 
-kubectl port-forward service/quickstart-es-http 9200:9200 -n elastic-system &
-```
-2. Open [https://localhost:5601](https://localhost:5601) in your browser
+2. Open [https://localhost:5601](https://localhost:5601) in your browser for Kibana. You can also use `https://localhost:9200` for Elasticsearch scripts/API calls.
 3. Login using username: elastic and the password from above
 
 ---
