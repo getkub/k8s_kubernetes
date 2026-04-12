@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "linux-endpoints.fullname" . }}
+  labels:
+    {{- include "linux-endpoints.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "linux-endpoints.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "linux-endpoints.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: ELASTIC_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.endpointConfig.elasticsearch.passwordSecretName }}
+                  key: {{ .Values.endpointConfig.elasticsearch.passwordSecretKey }}
+          volumeMounts:
+            - name: agent-config
+              mountPath: /etc/agent/elastic-agent.yml
+              subPath: elastic-agent.yml
+            # We need to mount the Elasticsearch CA cert so the agent can trust it
+            - name: elasticsearch-ca
+              mountPath: /etc/ssl/certs/elasticsearch-ca.crt
+              subPath: ca.crt
+      volumes:
+        - name: agent-config
+          configMap:
+            name: {{ include "linux-endpoints.fullname" . }}-config
+        - name: elasticsearch-ca
+          secret:
+            secretName: quickstart-es-http-certs-public
