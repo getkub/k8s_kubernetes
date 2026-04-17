@@ -1,0 +1,24 @@
+condition_field,condition_value,data_stream.dataset,confidence,notes
+category,Administrative,logs-azure.activitylogs,high,Azure Activity Log (control plane)
+properties.eventCategory,Administrative,logs-azure.activitylogs,high,Same as above (fallback match)
+operationName,Microsoft.*,logs-azure.activitylogs,medium,Control-plane operations pattern
+category,Security,logs-azure.auditlogs,medium,If coming from AAD/tenant context
+category,SignInLogs,logs-azure.signinlogs,high,Only if explicitly present (rare in Event Hub)
+category,ApplicationGatewayAccessLog,logs-azure.application_gateway,high,App Gateway diagnostic logs
+category,ApplicationGatewayFirewallLog,logs-azure.application_gateway,high,WAF logs
+category,ApplicationGatewayPerformanceLog,logs-azure.application_gateway,high,Performance logs
+category,AzureFirewallNetworkRule,logs-azure.firewall_logs,high,Firewall logs
+category,AzureFirewallApplicationRule,logs-azure.firewall_logs,high,Firewall logs
+category,AzureFirewallDnsProxy,logs-azure.firewall_logs,high,Firewall logs
+category,LoadBalancerHealthEvent,logs-azure.platformlogs,medium,No strong dedicated routing via Event Hub
+category,PostgreSQLFlexDatabaseXacts,logs-azure.platformlogs,low,Would require resource type to refine
+category,PostgreSQLFlexSessions,logs-azure.platformlogs,low,Same limitation
+category,PostgreSQLFlexTableStats,logs-azure.platformlogs,low,Same limitation
+category,QueryStoreRuntimeStatistics,logs-azure.platformlogs,low,DB metrics but no reliable routing
+category,JobLogs,logs-azure.platformlogs,low,Service ambiguous (Databricks/Batch/etc)
+category,JobStreams,logs-azure.platformlogs,low,Service ambiguous
+category,AzureSiteRecoveryEvents,logs-azure.platformlogs,medium,No dedicated dataset
+category,OperationalLogs,logs-azure.platformlogs,low,Generic category
+category,Error,logs-azure.platformlogs,low,Generic category
+category,Checkpoint,logs-azure.platformlogs,low,Internal/system
+*,*,logs-azure.platformlogs,default,Fallback for all unmatched events
