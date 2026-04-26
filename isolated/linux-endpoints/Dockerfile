@@ -27,7 +27,8 @@ RUN if [ "$TARGETARCH" = "arm64" ] || [ "$(uname -m)" = "aarch64" ]; then \
     fi && \
     curl -L -O https://artifacts.elastic.co/downloads/beats/elastic-agent/elastic-agent-${ELASTIC_VERSION}-linux-${AGENT_ARCH}.tar.gz && \
     tar xzvf elastic-agent-${ELASTIC_VERSION}-linux-${AGENT_ARCH}.tar.gz && \
-    mv elastic-agent-${ELASTIC_VERSION}-linux-${AGENT_ARCH} /opt/elastic-agent && \
+    mkdir -p /opt/Elastic && \
+    mv elastic-agent-${ELASTIC_VERSION}-linux-${AGENT_ARCH} /opt/Elastic/Agent && \
     rm elastic-agent-${ELASTIC_VERSION}-linux-${AGENT_ARCH}.tar.gz
 
 COPY entrypoint.sh /entrypoint.sh

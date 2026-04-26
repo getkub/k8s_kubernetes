@@ -6,15 +6,17 @@ service rsyslog start
 # Start sshd
 /usr/sbin/sshd
 
-# Ensure elastic-agent has configuration
-# The config map will mount to /etc/agent/elastic-agent.yml
-if [ -f "/etc/agent/elastic-agent.yml" ]; then
-    echo "Starting Elastic Agent with standalone config..."
-    cd /opt/elastic-agent
-    ./elastic-agent run -c /etc/agent/elastic-agent.yml -e &
+# Check if Fleet variables are provided via environment
+if [ -n "$FLEET_URL" ] && [ -n "$ENROLLMENT_TOKEN" ]; then
+    echo "Enrolling Elastic Agent into Fleet..."
+    cd /opt/Elastic/Agent
+    ./elastic-agent enroll --url="${FLEET_URL}" --enrollment-token="${ENROLLMENT_TOKEN}" --insecure --delay-enroll --force
+    
+    echo "Starting Fleet-managed Elastic Agent..."
+    ./elastic-agent run -e &
     AGENT_PID=$!
 else
-    echo "WARNING: /etc/agent/elastic-agent.yml not found. Running sleep loop instead."
+    echo "WARNING: FLEET_URL or ENROLLMENT_TOKEN not provided. Running sleep loop instead."
 fi
 
 # Trap signals for clean exit
