@@ -9,7 +9,7 @@ service rsyslog start
 # Check if Fleet variables are provided via environment
 if [ -n "$FLEET_URL" ] && [ -n "$ENROLLMENT_TOKEN" ]; then
     echo "Enrolling Elastic Agent into Fleet..."
-    cd /opt/elastic-agent
+    cd /opt/Elastic/Agent
     ./elastic-agent enroll --url="${FLEET_URL}" --enrollment-token="${ENROLLMENT_TOKEN}" --insecure --delay-enroll --force
     
     echo "Starting Fleet-managed Elastic Agent..."

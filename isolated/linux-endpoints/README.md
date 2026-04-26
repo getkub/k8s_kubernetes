@@ -11,7 +11,28 @@ Instead of running the complex daemonset agent natively on the host nodes, we've
 - **Base Image:** `ubuntu:24.04`
 - **Installed Tools:** `sshd`, `rsyslog`, `sudo`, `curl`, and standard chrony tasks.
 - **Agent Version:** `elastic-agent:8.17.0` running natively within the container.
-- **Agent Config:** Uses `Standalone` mode, directly collecting `/var/log/auth.log` and `/var/log/syslog` via the generic `log` input integrations and sending those off to your elastic instance securely.
+- **Agent Config:** Uses **Fleet-managed** mode, dynamically enrolling at startup via `entrypoint.sh` using your defined Kibana Fleet Enrollment Token. It automatically pulls down integrations like `System` or `Custom Logs` to securely ship `/var/log/auth.log` and `/var/log/syslog`.
+## ⚙️ Kibana Fleet Setup (Required)
+
+Because the endpoints are dynamically managed by Fleet, you **must** configure Kibana's internal global Fleet Settings correctly so the agents know where to communicate.
+
+1. Open **Kibana** (`https://localhost:5601`) and navigate to **Fleet -> Settings**.
+2. **Fleet Server Hosts**: Edit or add a host pointing to the internal Kubernetes service created by ECK:
+   ```text
+   https://elastic-agent-agent-http.elastic-agent.svc.cluster.local:8220
+   ```
+3. **Outputs**: Edit the `default` Elasticsearch output to point to the ECK Elasticsearch service:
+   ```text
+   https://quickstart-es-http.elastic-system.svc.cluster.local:9200
+   ```
+4. **Bypass Self-Signed Certificates**: In the **Outputs** setting, scroll down to the **Advanced YAML configuration** box and add:
+   ```yaml
+   ssl.verification_mode: none
+   ```
+5. **Save and Apply**. This ensures your endpoints don't crash with `x509: certificate signed by unknown authority` or bad DNS lookups when attempting to fetch policies or ship metrics!
+
+> [!WARNING]
+> Do **not** add the `Elastic Defend` integration to your simulated Linux policy. Elastic Defend requires host-level `systemd` and exclusive kernel eBPF access, which will conflict and fail inside these shared-kernel Docker containers. Use the **System** integration instead.
 
 ## Check Your Live Simulation Fleet
 
@@ -68,4 +89,4 @@ If you'd like to scale out down to zero endpoints or up to 20 endpoints across y
 ./isolated/linux-endpoints/deploy.sh
 ```
 
-*(Note that the deploy script has been explicitly fixed to copy the TLS Certificates and Credentials out from your backend Elastic namespace `elastic-system` so that the agent handles encryption natively and transparently).*
+*(Note: The deploy script handles pushing the new pods. The agents inside those new pods will automatically retrieve their policies from Kibana instantly upon boot).*
