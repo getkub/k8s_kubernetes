@@ -12,4 +12,4 @@ fullnameOverride: ""
 fleet:
   # The native K8s service ECK created for Fleet Server
   url: "https://elastic-agent-agent-http.elastic-agent.svc.cluster.local:8220"
-  enrollmentToken: "czZObVVwMEJuTjM0eVItWmNLa3E6UFM0ZEtfaU5PTGtrUS1JMGo3NlRwUQ=="
+  enrollmentToken: "RkJxVHlaMEI2aDYwTGg5eldNU2c6aTB2MnVycm5IZXZhZ0tyZ19GN2w5QQ=="
