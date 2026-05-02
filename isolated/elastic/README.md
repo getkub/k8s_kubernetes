@@ -134,3 +134,16 @@ kubectl scale statefulset elastic-operator -n elastic-system --replicas=1
 kubectl scale statefulset quickstart-es -n elastic-system --replicas=3
 kubectl scale deployment kibana-kb -n elastic-system --replicas=1
 ```
+
+
+## Manual Upgrade
+
+```
+helm upgrade elastic-stack . \
+  -n elastic-system \
+  -f values.yaml \
+  --wait \
+  --timeout 15m \
+  --rollback-on-failure \
+  --force-replace
+```

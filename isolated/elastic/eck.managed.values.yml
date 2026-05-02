@@ -1,0 +1,9 @@
+elasticsearch:
+  version: 9.3.4
+
+kibana:
+  version: 9.3.4
+
+agent:
+  enabled: true
+  version: 9.3.4

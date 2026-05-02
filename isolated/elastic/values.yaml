@@ -11,7 +11,7 @@ kibana:
 
 agent:
   enabled: true
-  version: 9.3.1
+  version: 9.3.4
   mode: "fleet"
   fleetServerEnabled: true
   namespace: "elastic-agent"
