@@ -3,11 +3,22 @@ set -e
 
 ELASTIC_NAMESPACE="elastic-system"
 AGENT_NAMESPACE="elastic-agent"
-RELEASE_NAME="elastic-stack"
 OPERATOR_RELEASE_NAME="elastic-operator"
+MANIFEST_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")/../manifests" && pwd)"
+VERSION_FILE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/version.env"
 
-echo ">>> Uninstalling Helm release $RELEASE_NAME from namespace $ELASTIC_NAMESPACE..."
-helm uninstall "$RELEASE_NAME" -n "$ELASTIC_NAMESPACE" || true
+if [ -f "$VERSION_FILE" ]; then
+    source "$VERSION_FILE"
+    export ELASTIC_VERSION
+else
+    # Fallback if somehow version.env is missing
+    export ELASTIC_VERSION="9.4.0"
+fi
+
+echo ">>> Uninstalling Elastic resources from namespace $ELASTIC_NAMESPACE and $AGENT_NAMESPACE..."
+envsubst < "$MANIFEST_PATH/elastic-agent.yaml" | kubectl delete -f - || true
+envsubst < "$MANIFEST_PATH/kibana.yaml" | kubectl delete -f - || true
+envsubst < "$MANIFEST_PATH/elasticsearch.yaml" | kubectl delete -f - || true
 
 echo ">>> Uninstalling Helm release $OPERATOR_RELEASE_NAME from namespace $ELASTIC_NAMESPACE..."
 helm uninstall "$OPERATOR_RELEASE_NAME" -n "$ELASTIC_NAMESPACE" || true

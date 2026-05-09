@@ -1,0 +1,23 @@
+apiVersion: agent.k8s.elastic.co/v1alpha1
+kind: Agent
+metadata:
+  name: elastic-agent
+  namespace: elastic-agent
+spec:
+  version: ${ELASTIC_VERSION}
+  mode: fleet
+  fleetServerEnabled: true
+  daemonSet: {}
+  elasticsearchRefs:
+    - name: quickstart
+      namespace: elastic-system
+  config:
+    fleet:
+      kibana:
+        host: "https://kibana-kb-http.elastic-system.svc.cluster.local:5601"
+      ca_trusted_fingerprint: ""
+  secureSettings:
+    - secretName: quickstart-es-elastic-user
+  kibanaRef:
+    name: kibana
+    namespace: elastic-system

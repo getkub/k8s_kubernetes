@@ -3,15 +3,24 @@ set -e
 
 NAMESPACE="elastic-system"
 AGENT_NAMESPACE="elastic-agent"
-RELEASE_NAME="elastic-stack"
-CHART_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+MANIFEST_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")/../manifests" && pwd)"
+VERSION_FILE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/version.env"
+
+if [ -f "$VERSION_FILE" ]; then
+    source "$VERSION_FILE"
+    export ELASTIC_VERSION
+else
+    echo "ERROR: $VERSION_FILE not found."
+    exit 1
+fi
 
 # Create namespaces if not exist
 kubectl get namespace "$NAMESPACE" >/dev/null 2>&1 || kubectl create namespace "$NAMESPACE"
 kubectl get namespace "$AGENT_NAMESPACE" >/dev/null 2>&1 || kubectl create namespace "$AGENT_NAMESPACE"
 
-echo ">>> Deploying Elasticsearch & Kibana..."
-helm upgrade --install "$RELEASE_NAME" "$CHART_PATH" -n "$NAMESPACE" --create-namespace
+echo ">>> Deploying Elasticsearch & Kibana using native ECK manifests (Version: $ELASTIC_VERSION)..."
+envsubst < "$MANIFEST_PATH/elasticsearch.yaml" | kubectl apply -f -
+envsubst < "$MANIFEST_PATH/kibana.yaml" | kubectl apply -f -
 
 echo ">>> Waiting for Elasticsearch cluster to be Ready..."
 for i in {1..60}; do
@@ -45,30 +54,23 @@ if [[ "$KIBANA_PHASE" != "green" ]]; then
     exit 1
 fi
 
-# Check if agent is enabled in values.yaml
-AGENT_ENABLED=$(yq e '.agent.enabled // false' "$CHART_PATH/values.yaml" 2>/dev/null || echo "false")
+echo ">>> Deploying Elastic Agent in namespace $AGENT_NAMESPACE..."
+envsubst < "$MANIFEST_PATH/elastic-agent.yaml" | kubectl apply -f -
 
-if [[ "$AGENT_ENABLED" == "true" ]]; then
-    echo ">>> Deploying Elastic Agent in namespace $AGENT_NAMESPACE..."
-    helm upgrade --install elastic-agent "$CHART_PATH" -n "$AGENT_NAMESPACE" --set agent.enabled=true
-
-    echo ">>> Waiting for Elastic Agent pods to be Running..."
-    for i in {1..60}; do
-        AGENT_READY_COUNT=$(kubectl get pods -n "$AGENT_NAMESPACE" --selector=agent.k8s.elastic.co/name=elastic-agent --field-selector=status.phase=Running 2>/dev/null | grep -c elastic-agent || echo 0)
-        if (( AGENT_READY_COUNT > 0 )); then
-            echo ">>> Elastic Agent pods are running!"
-            break
-        fi
-        echo "Waiting for Elastic Agent pods..."
-        sleep 5
-    done
-
-    if (( AGENT_READY_COUNT == 0 )); then
-        echo "ERROR: Elastic Agent pods did not become ready in time."
-        exit 1
+echo ">>> Waiting for Elastic Agent pods to be Running..."
+for i in {1..60}; do
+    AGENT_READY_COUNT=$(kubectl get pods -n "$AGENT_NAMESPACE" --selector=agent.k8s.elastic.co/name=elastic-agent --field-selector=status.phase=Running 2>/dev/null | grep -c elastic-agent || echo 0)
+    if (( AGENT_READY_COUNT > 0 )); then
+        echo ">>> Elastic Agent pods are running!"
+        break
     fi
-else
-    echo ">>> Elastic Agent deployment skipped (agent.enabled is false or not set)."
+    echo "Waiting for Elastic Agent pods..."
+    sleep 5
+done
+
+if (( AGENT_READY_COUNT == 0 )); then
+    echo "ERROR: Elastic Agent pods did not become ready in time."
+    exit 1
 fi
 
 echo ">>> Deployment complete."
