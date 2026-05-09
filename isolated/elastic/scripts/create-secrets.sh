@@ -27,10 +27,6 @@ done
 
 PASSWORD=$(kubectl get secret "$ES_SECRET_NAME" -n "$ES_SECRET_NS" -o jsonpath="{.data.elastic}" | base64 --decode)
 
-echo "🔐 Creating Kubernetes secret for Elastic password..."
-kubectl delete secret "$ES_SECRET_NAME" -n "$ES_SECRET_NS" --ignore-not-found
-kubectl create secret generic "$ES_SECRET_NAME" -n "$ES_SECRET_NS" --from-literal=elastic="$PASSWORD"
-
 echo "📡 Starting port-forward to Kibana..."
 kubectl port-forward -n "$ES_SECRET_NS" svc/kibana-kb-http 5601:5601 >/dev/null 2>&1 &
 PF_PID=$!
