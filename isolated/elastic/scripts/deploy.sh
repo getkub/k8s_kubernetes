@@ -54,23 +54,4 @@ if [[ "$KIBANA_PHASE" != "green" ]]; then
     exit 1
 fi
 
-echo ">>> Deploying Elastic Agent in namespace $AGENT_NAMESPACE..."
-envsubst < "$MANIFEST_PATH/elastic-agent.yaml" | kubectl apply -f -
-
-echo ">>> Waiting for Elastic Agent pods to be Running..."
-for i in {1..60}; do
-    AGENT_READY_COUNT=$(kubectl get pods -n "$AGENT_NAMESPACE" --selector=agent.k8s.elastic.co/name=elastic-agent --field-selector=status.phase=Running 2>/dev/null | grep -c elastic-agent || echo 0)
-    if (( AGENT_READY_COUNT > 0 )); then
-        echo ">>> Elastic Agent pods are running!"
-        break
-    fi
-    echo "Waiting for Elastic Agent pods..."
-    sleep 5
-done
-
-if (( AGENT_READY_COUNT == 0 )); then
-    echo "ERROR: Elastic Agent pods did not become ready in time."
-    exit 1
-fi
-
 echo ">>> Deployment complete."

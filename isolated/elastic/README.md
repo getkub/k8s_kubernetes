@@ -54,11 +54,18 @@ Install the operator (only needed once per cluster, or when upgrading the operat
 
 Deploy the stack with the target version defined in `version.env`:
 ```bash
-./scripts/create-secrets.sh
 ./scripts/deploy.sh
+./scripts/create-secrets.sh
 ```
 
 `deploy.sh` will substitute the version from `version.env` into the native manifests and apply them to the cluster. The ECK operator takes over from there to spin up the pods.
+
+### 3. Deploy Elastic Agent (Optional)
+
+If you wish to deploy the Fleet Server and Elastic Agent, you can run the agent deployment script. This is optional and separates the complex Fleet setup from the core database setup.
+```bash
+./scripts/deploy-agent.sh
+```
 
 ---
 
