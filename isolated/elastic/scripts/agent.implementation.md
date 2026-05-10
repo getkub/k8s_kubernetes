@@ -1,34 +1,39 @@
 # Link Simulation Linux Endpoints to Fleet Server
 
-We need to properly connect your `linux-endpoints` deployment in the `endpoint-simulation` namespace to the new native ECK Fleet Server. Currently, they are using old environment variables (`FLEET_URL` and `ENROLLMENT_TOKEN`) that point to a non-existent setup.
+This document outlines the architecture for connecting the `linux-endpoints` deployment to the native ECK Fleet Server.
 
-## User Review Required
+## Key Technical Requirements
 
+### 1. SSL Hostname Matching
 > [!IMPORTANT]
-> The ECK Operator is currently struggling to automatically generate the Agent policies inside Kibana due to transient authentication timeouts when communicating with Kibana. 
-> To bypass this and guarantee the simulated endpoints enroll successfully, I propose making `deploy-agent.sh` handle the policy creation and token generation via the Kibana API, similar to how your old `create-secrets.sh` worked.
+> The Fleet Server URL **must** use the short hostname: `https://fleet-server-agent-http.elastic-agent.svc:8220`.
+> Using the full `.cluster.local` suffix will cause SSL handshake failures because the ECK-generated certificates only include the shorter service names in their Subject Alternative Names (SANs).
 
-## Proposed Changes
+### 2. Fleet Output & TLS Trust
+Since simulated agents are running in a separate namespace (`endpoint-simulation`), they may not trust the internal ECK CA by default. 
+- The `fleet-default-output` is configured with `ssl.verification_mode: none` to allow internal data ingestion to Elasticsearch without certificate errors.
 
-### `isolated/elastic/scripts/deploy-agent.sh`
+### 3. Automated Configuration
+The `deploy-agent.sh` script handles the following programmatically to ensure idempotency:
+1. **Fleet Server Hosts**: Configures the global Fleet settings via `/api/fleet/fleet_server_hosts`.
+2. **Policy Management**: Creates `eck-fleet-server`, `eck-agent`, and `linux-endpoints-policy` if they don't exist.
+3. **Token Generation**: Automatically retrieves or generates enrollment tokens for the policies.
+4. **Endpoint Patching**: Dynamically updates the `linux-endpoints` deployment only if the `FLEET_URL` or `ENROLLMENT_TOKEN` has changed.
 
-I will update this script to:
-1. Extract the `elastic` user password securely.
-2. Wait for Kibana to be ready and available.
-3. Use the Kibana API to programmatically create the Fleet Server policy (`eck-fleet-server`) to unblock the ECK Operator.
-4. Use the Kibana API to create a dedicated agent policy for your simulated endpoints (e.g., `linux-endpoints-policy`).
-5. Generate an enrollment token for that specific policy.
-6. Programmatically patch the `linux-endpoints` deployment in the `endpoint-simulation` namespace to inject the correct `FLEET_URL` and `ENROLLMENT_TOKEN`.
+## Maintenance Commands
 
-#### [MODIFY] `isolated/elastic/scripts/deploy-agent.sh`
-- Add Kibana API calls for policy and token generation.
-- Add `kubectl set env` command to update the `linux-endpoints` deployment.
+### Check Agent Status
+```bash
+# Check Fleet Server health
+kubectl exec -n elastic-agent $(kubectl get pods -n elastic-agent -l agent.k8s.elastic.co/name=fleet-server -o name) -- elastic-agent status
 
-## Verification Plan
+# Check Elastic Agent health (DaemonSet)
+kubectl exec -n elastic-agent $(kubectl get pods -n elastic-agent -l agent.k8s.elastic.co/name=elastic-agent -o name | head -n 1) -- elastic-agent status
+```
 
-### Automated Tests
-- Run `./scripts/deploy-agent.sh` and verify that both the `fleet-server` and `elastic-agent` pods transition to `Running` state.
-- Check `kubectl get pods -n endpoint-simulation` to ensure the simulated endpoints successfully restart with the new injected environment variables.
+### Force Policy Refresh
+If agents show "Outdated policy", restarting the pods or running `deploy-agent.sh` again will trigger a check-in.
 
-### Manual Verification
-- Check the Kibana Fleet UI to confirm that the `linux-endpoints` agents appear as "Healthy" and are successfully enrolled under the correct policy.
+## Verification
+- **Kibana Fleet UI**: Confirm all agents are "Healthy".
+- **Logs**: Check `kubectl logs -n endpoint-simulation ...` for any "x509: certificate signed by unknown authority" errors.
