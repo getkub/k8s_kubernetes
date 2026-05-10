@@ -54,34 +54,100 @@ done
 echo "⚙️ Initializing Fleet setup..."
 curl -sk -u elastic:"$PASSWORD" -X POST "https://localhost:5601/api/fleet/setup" -H 'kbn-xsrf: true' > /dev/null
 
-echo "⚙️ Creating eck-fleet-server policy..."
-curl -sk -u elastic:"$PASSWORD" -X POST "https://localhost:5601/api/fleet/agent_policies" \
-  -H 'kbn-xsrf: true' -H 'Content-Type: application/json' \
-  -d "{\"id\":\"eck-fleet-server\",\"name\":\"eck-fleet-server\",\"namespace\":\"default\",\"monitoring_enabled\":[\"logs\",\"metrics\"]}" > /dev/null
+echo "⚙️ Checking for existing policies..."
+# Function to check if a policy exists (returns 0 if exists, 1 if not)
+policy_exists() {
+  local status_code
+  status_code=$(curl -sk -u elastic:"$PASSWORD" -X GET "https://localhost:5601/api/fleet/agent_policies/$1" -o /dev/null -w "%{http_code}")
+  [ "$status_code" -eq 200 ]
+}
 
-echo "⚙️ Creating eck-agent policy..."
-curl -sk -u elastic:"$PASSWORD" -X POST "https://localhost:5601/api/fleet/agent_policies" \
-  -H 'kbn-xsrf: true' -H 'Content-Type: application/json' \
-  -d "{\"id\":\"eck-agent\",\"name\":\"eck-agent\",\"namespace\":\"default\",\"monitoring_enabled\":[\"logs\",\"metrics\"]}" > /dev/null
+echo "⚙️ Configuring Fleet Server host in settings..."
+# First check if it already exists to avoid duplicates
+EXISTING_HOSTS=$(curl -sk -u elastic:"$PASSWORD" -X GET "https://localhost:5601/api/fleet/fleet_server_hosts" | jq -r '.items[]? | .host_urls[]?')
+if ! echo "$EXISTING_HOSTS" | grep -q "https://fleet-server-agent-http.elastic-agent.svc:8220"; then
+    curl -sk -u elastic:"$PASSWORD" -X POST "https://localhost:5601/api/fleet/fleet_server_hosts" \
+      -H 'kbn-xsrf: true' -H 'Content-Type: application/json' \
+      -d "{
+        \"name\": \"Internal Fleet Server\",
+        \"host_urls\": [\"https://fleet-server-agent-http.elastic-agent.svc:8220\"],
+        \"is_default\": true
+      }" > /dev/null
+else
+    echo "✅ Fleet Server host already configured in settings."
+fi
 
-echo "⚙️ Creating linux-endpoints-policy..."
-curl -sk -u elastic:"$PASSWORD" -X POST "https://localhost:5601/api/fleet/agent_policies" \
+echo "⚙️ Configuring Fleet output to point to internal Elasticsearch service..."
+curl -sk -u elastic:"$PASSWORD" -X PUT "https://localhost:5601/api/fleet/outputs/fleet-default-output" \
   -H 'kbn-xsrf: true' -H 'Content-Type: application/json' \
-  -d "{\"id\":\"linux-endpoints-policy\",\"name\":\"linux-endpoints-policy\",\"namespace\":\"default\",\"monitoring_enabled\":[\"logs\",\"metrics\"]}" > /dev/null
+  -d "{
+    \"name\": \"default\",
+    \"hosts\": [\"https://quickstart-es-http.elastic-system.svc:9200\"],
+    \"is_default\": true,
+    \"is_default_monitoring\": true,
+    \"type\": \"elasticsearch\",
+    \"ssl\": {
+      \"verification_mode\": \"none\"
+    }
+  }" > /dev/null
+
+if ! policy_exists "eck-fleet-server"; then
+    echo "⚙️ Creating eck-fleet-server policy..."
+    curl -sk -u elastic:"$PASSWORD" -X POST "https://localhost:5601/api/fleet/agent_policies" \
+      -H 'kbn-xsrf: true' -H 'Content-Type: application/json' \
+      -d "{
+        \"id\": \"eck-fleet-server\",
+        \"name\": \"eck-fleet-server\",
+        \"namespace\": \"default\",
+        \"monitoring_enabled\": [\"logs\", \"metrics\"],
+        \"has_fleet_server\": true
+      }" > /dev/null
+else
+    echo "✅ eck-fleet-server policy already exists."
+fi
+
+if ! policy_exists "eck-agent"; then
+    echo "⚙️ Creating eck-agent policy..."
+    curl -sk -u elastic:"$PASSWORD" -X POST "https://localhost:5601/api/fleet/agent_policies" \
+      -H 'kbn-xsrf: true' -H 'Content-Type: application/json' \
+      -d "{\"id\":\"eck-agent\",\"name\":\"eck-agent\",\"namespace\":\"default\",\"monitoring_enabled\":[\"logs\",\"metrics\"]}" > /dev/null
+else
+    echo "✅ eck-agent policy already exists."
+fi
+
+if ! policy_exists "linux-endpoints-policy"; then
+    echo "⚙️ Creating linux-endpoints-policy..."
+    curl -sk -u elastic:"$PASSWORD" -X POST "https://localhost:5601/api/fleet/agent_policies" \
+      -H 'kbn-xsrf: true' -H 'Content-Type: application/json' \
+      -d "{\"id\":\"linux-endpoints-policy\",\"name\":\"linux-endpoints-policy\",\"namespace\":\"default\",\"monitoring_enabled\":[\"logs\",\"metrics\"]}" > /dev/null
+else
+    echo "✅ linux-endpoints-policy already exists."
+fi
 
 # Get the policy ID for linux-endpoints-policy
 echo "🎫 Fetching linux-endpoints-policy ID..."
 POLICY_ID=$(curl -sk -u elastic:"$PASSWORD" -X GET "https://localhost:5601/api/fleet/agent_policies" | jq -r '.items[] | select(.name=="linux-endpoints-policy") | .id')
 
 if [ -n "$POLICY_ID" ] && [ "$POLICY_ID" != "null" ]; then
-    echo "🎫 Requesting enrollment token for linux-endpoints-policy..."
-    ENROLLMENT_TOKEN=$(curl -sk -u elastic:"$PASSWORD" -X POST "https://localhost:5601/api/fleet/enrollment_api_keys" \
-      -H 'kbn-xsrf: true' -H 'Content-Type: application/json' \
-      -d "{\"policy_id\":\"$POLICY_ID\"}" | jq -r '.item.api_key')
+    echo "🎫 Checking for existing enrollment token for linux-endpoints-policy..."
+    # Try to find an existing token first
+    ENROLLMENT_TOKEN=$(curl -sk -u elastic:"$PASSWORD" -X GET "https://localhost:5601/api/fleet/enrollment_api_keys" | jq -r ".items[] | select(.policy_id==\"$POLICY_ID\") | .api_key" | head -n 1)
     
-    echo "✅ Enrollment token retrieved successfully!"
+    if [ -z "$ENROLLMENT_TOKEN" ] || [ "$ENROLLMENT_TOKEN" == "null" ]; then
+        echo "🎫 Requesting new enrollment token..."
+        ENROLLMENT_TOKEN=$(curl -sk -u elastic:"$PASSWORD" -X POST "https://localhost:5601/api/fleet/enrollment_api_keys" \
+          -H 'kbn-xsrf: true' -H 'Content-Type: application/json' \
+          -d "{\"policy_id\":\"$POLICY_ID\"}" | jq -r '.item.api_key')
+    fi
+    
+    if [ -n "$ENROLLMENT_TOKEN" ] && [ "$ENROLLMENT_TOKEN" != "null" ]; then
+        echo "✅ Enrollment token retrieved."
+    else
+        echo "❌ ERROR: Failed to get enrollment token."
+        exit 1
+    fi
 else
-    echo "⚠️ WARNING: Failed to get policy ID for linux-endpoints-policy. Agent enrollment for simulated endpoints might fail."
+    echo "⚠️ WARNING: Failed to get policy ID for linux-endpoints-policy."
 fi
 
 # Deploy Agent manifests
@@ -99,17 +165,22 @@ for i in {1..60}; do
 done
 
 if [ -n "${ENROLLMENT_TOKEN:-}" ]; then
-    FLEET_URL="https://fleet-server-agent-http.elastic-agent.svc.cluster.local:8220"
-    echo "🔗 Linking linux endpoints to new Fleet Server at $FLEET_URL..."
+    FLEET_URL="https://fleet-server-agent-http.elastic-agent.svc:8220"
     
-    # Check if deployment exists before patching
-    if kubectl get deployment "$ENDPOINT_DEPLOYMENT" -n "$ENDPOINT_NAMESPACE" >/dev/null 2>&1; then
-        kubectl set env deployment/"$ENDPOINT_DEPLOYMENT" -n "$ENDPOINT_NAMESPACE" \
-            FLEET_URL="$FLEET_URL" \
-            ENROLLMENT_TOKEN="$ENROLLMENT_TOKEN"
-        echo "✅ linux-endpoints deployment updated with new Fleet URL and Enrollment Token."
+    # Only patch if necessary to avoid unnecessary rollouts
+    CURRENT_FLEET_URL=$(kubectl get deployment "$ENDPOINT_DEPLOYMENT" -n "$ENDPOINT_NAMESPACE" -o jsonpath='{.spec.template.spec.containers[0].env[?(@.name=="FLEET_URL")].value}' 2>/dev/null || echo "")
+    CURRENT_TOKEN=$(kubectl get deployment "$ENDPOINT_DEPLOYMENT" -n "$ENDPOINT_NAMESPACE" -o jsonpath='{.spec.template.spec.containers[0].env[?(@.name=="ENROLLMENT_TOKEN")].value}' 2>/dev/null || echo "")
+    
+    if [ "$CURRENT_FLEET_URL" != "$FLEET_URL" ] || [ "$CURRENT_TOKEN" != "$ENROLLMENT_TOKEN" ]; then
+        echo "🔗 Linking linux endpoints to new Fleet Server at $FLEET_URL..."
+        if kubectl get deployment "$ENDPOINT_DEPLOYMENT" -n "$ENDPOINT_NAMESPACE" >/dev/null 2>&1; then
+            kubectl set env deployment/"$ENDPOINT_DEPLOYMENT" -n "$ENDPOINT_NAMESPACE" \
+                FLEET_URL="$FLEET_URL" \
+                ENROLLMENT_TOKEN="$ENROLLMENT_TOKEN"
+            echo "✅ linux-endpoints deployment updated."
+        fi
     else
-        echo "⚠️ WARNING: Deployment $ENDPOINT_DEPLOYMENT not found in namespace $ENDPOINT_NAMESPACE."
+        echo "✅ linux-endpoints deployment already has correct Fleet configuration. Skipping patch."
     fi
 fi
 
@@ -123,11 +194,5 @@ for i in {1..60}; do
     echo "Waiting for Elastic Agent pods..."
     sleep 5
 done
-
-if (( AGENT_READY_COUNT == 0 )); then
-    echo "WARNING: Elastic Agent pods did not become ready in time."
-    echo "This is often a transient ECK Fleet enrollment issue while Kibana configures policies."
-    exit 0
-fi
 
 echo ">>> Agent Deployment & Endpoint Linking complete."
