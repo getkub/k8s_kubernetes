@@ -65,12 +65,12 @@ policy_exists() {
 echo "⚙️ Configuring Fleet Server host in settings..."
 # First check if it already exists to avoid duplicates
 EXISTING_HOSTS=$(curl -sk -u elastic:"$PASSWORD" -X GET "https://localhost:5601/api/fleet/fleet_server_hosts" | jq -r '.items[]? | .host_urls[]?')
-if ! echo "$EXISTING_HOSTS" | grep -q "https://fleet-server-agent-http.elastic-agent.svc.cluster.local:8220"; then
+if ! echo "$EXISTING_HOSTS" | grep -q "https://fleet-server-agent-http.elastic-agent.svc:8220"; then
     curl -sk -u elastic:"$PASSWORD" -X POST "https://localhost:5601/api/fleet/fleet_server_hosts" \
       -H 'kbn-xsrf: true' -H 'Content-Type: application/json' \
       -d "{
         \"name\": \"Internal Fleet Server\",
-        \"host_urls\": [\"https://fleet-server-agent-http.elastic-agent.svc.cluster.local:8220\"],
+        \"host_urls\": [\"https://fleet-server-agent-http.elastic-agent.svc:8220\"],
         \"is_default\": true
       }" > /dev/null
 else
@@ -165,7 +165,7 @@ for i in {1..60}; do
 done
 
 if [ -n "${ENROLLMENT_TOKEN:-}" ]; then
-    FLEET_URL="https://fleet-server-agent-http.elastic-agent.svc.cluster.local:8220"
+    FLEET_URL="https://fleet-server-agent-http.elastic-agent.svc:8220"
     
     # Only patch if necessary to avoid unnecessary rollouts
     CURRENT_FLEET_URL=$(kubectl get deployment "$ENDPOINT_DEPLOYMENT" -n "$ENDPOINT_NAMESPACE" -o jsonpath='{.spec.template.spec.containers[0].env[?(@.name=="FLEET_URL")].value}' 2>/dev/null || echo "")
