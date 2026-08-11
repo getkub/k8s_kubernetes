@@ -41,8 +41,8 @@ elastic/
 
 The operator manages the lifecycle of all Elastic Custom Resources. First, check your target versions in `version.env`:
 ```env
-ECK_OPERATOR_VERSION="3.4.0"
-ELASTIC_VERSION="9.4.2"
+ECK_OPERATOR_VERSION="3.5.0"
+ELASTIC_VERSION="9.5.0"
 ```
 
 Install the operator (only needed once per cluster, or when upgrading the operator itself):
