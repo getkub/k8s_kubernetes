@@ -1,0 +1,270 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      },
+      "id": "1",
+      "name": "Schedule Trigger",
+      "position": [
+        -384,
+        -192
+      ],
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://host.docker.internal:9200/.alerts-security.alerts-*/_search",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"query\": {\n    \"bool\": {\n      \"must\": [\n        {\n          \"term\": {\n            \"kibana.alert.workflow_status\": \"open\"\n          }\n        }\n      ]\n    }\n  }\n}",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "id": "2",
+      "name": "Fetch Open Alerts",
+      "position": [
+        -176,
+        -416
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "7Apyo7Hh1buKcAoP",
+          "name": "elastic-api"
+        },
+        "httpHeaderAuth": {
+          "id": "9blYUYG58yjIUteG",
+          "name": "elastic-n8n-test"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const alerts = $input.first().json.data || [];\nif (alerts.length === 0) {\n  return [];\n}\n\nlet summary = `Found ${alerts.length} open SOC alerts:\\n\\n`;\nalerts.forEach(alert => {\n  summary += `- ${alert.signal.rule.name || 'Unknown Rule'} (Severity: ${alert.signal.rule.severity || 'Unknown'})\\n`;\n});\n\nreturn [{ json: { summary: summary, alertCount: alerts.length, rawAlerts: alerts } }];"
+      },
+      "id": "3",
+      "name": "Parse Alerts",
+      "position": [
+        16,
+        -416
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://kibana-kb-http.elastic-system.svc.cluster.local:5601/api/cases",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "kbn-xsrf",
+              "value": "true"
+            },
+            {
+              "name": "Authorization",
+              "value": "ApiKey YOUR_API_KEY_HERE"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"title\": \"Automated SOC Investigation: \" + $json.alertCount + \" Alerts\",\n  \"description\": $json.summary,\n  \"tags\": [\"automated\", \"n8n\"],\n  \"connector\": {\n    \"id\": \"none\",\n    \"name\": \"none\",\n    \"type\": \".none\",\n    \"fields\": null\n  },\n  \"settings\": {\n    \"syncAlerts\": true\n  }\n}",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "id": "4",
+      "name": "Create Kibana Case",
+      "position": [
+        208,
+        -416
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "url": "https://host.docker.internal:9200/_cluster/health",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "timeout": 5000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        496,
+        -368
+      ],
+      "id": "06d6123d-94d1-48bc-9b65-a3cc0bfff3f9",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "7Apyo7Hh1buKcAoP",
+          "name": "elastic-api"
+        },
+        "httpHeaderAuth": {
+          "id": "9blYUYG58yjIUteG",
+          "name": "elastic-n8n-test"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://host.docker.internal:9200/_cluster/health",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "timeout": 5000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        416,
+        -48
+      ],
+      "id": "169deb56-db61-46ca-a32e-ea9c081e8c19",
+      "name": "HTTP Request1",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "7Apyo7Hh1buKcAoP",
+          "name": "elastic-api"
+        },
+        "httpHeaderAuth": {
+          "id": "9blYUYG58yjIUteG",
+          "name": "elastic-n8n-test"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "hits.hits",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        16,
+        -240
+      ],
+      "id": "159c0a1c-d018-4a78-96f1-2bb229cfa836",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "max",
+              "field": "_source['kibana.alert.rule.parameters'].risk_score"
+            }
+          ]
+        },
+        "fieldsToSplitBy": "_source['kibana.alert.rule.meta.kibana_siem_app_url']",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        -240
+      ],
+      "id": "ccb67599-71b9-49eb-b2a9-0f5c91a19210",
+      "name": "Summarize"
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Fetch Open Alerts",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Fetch Open Alerts": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Parse Alerts",
+            "type": "main"
+          },
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Alerts": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Create Kibana Case",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Summarize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b6758f34ba0c1f8139afe7a4bbfaeb4e5c923261083a019bebf56d0f7225c1f9"
+  }
+}
