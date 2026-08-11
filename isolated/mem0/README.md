@@ -17,19 +17,41 @@ The official Mem0 stack currently builds its dashboard from the `server/dashboar
 
 Create a namespace and a Secret. The Secret should contain `OPENAI_API_KEY`, `JWT_SECRET`, `POSTGRES_PASSWORD`, and optionally `ADMIN_API_KEY`.
 
+The following keeps secret values out of the command history: the OpenAI key is entered without echo, while the generated values are held in exported shell variables. The command history contains only variable names.
+
 ```bash
 kubectl create namespace mem0
 
+read -r -s OPENAI_API_KEY
+export OPENAI_API_KEY
+export JWT_SECRET="$(openssl rand -base64 48)"
+export POSTGRES_PASSWORD="$(openssl rand -base64 32)"
+export ADMIN_API_KEY="$(openssl rand -base64 32)"
+
 kubectl create secret generic mem0-secrets \
   --namespace mem0 \
-  --from-literal=OPENAI_API_KEY='replace-me' \
-  --from-literal=JWT_SECRET="$(openssl rand -base64 48)" \
-  --from-literal=POSTGRES_PASSWORD="$(openssl rand -base64 32)" \
-  --from-literal=ADMIN_API_KEY="$(openssl rand -base64 32)"
+  --from-literal=OPENAI_API_KEY="${OPENAI_API_KEY}" \
+  --from-literal=JWT_SECRET="${JWT_SECRET}" \
+  --from-literal=POSTGRES_PASSWORD="${POSTGRES_PASSWORD}" \
+  --from-literal=ADMIN_API_KEY="${ADMIN_API_KEY}" \
+  --dry-run=client -o yaml | kubectl apply -f -
 
 helm upgrade --install mem0 ./isolated/mem0 \
   --namespace mem0 \
   --set secrets.existingSecret=mem0-secrets
+```
+
+Save the generated `ADMIN_API_KEY` in a password manager before unsetting the shell variables:
+
+```bash
+export MEM0_API_KEY="${ADMIN_API_KEY}"
+unset OPENAI_API_KEY JWT_SECRET POSTGRES_PASSWORD ADMIN_API_KEY
+```
+
+If the shell variable is gone but the Kubernetes Secret still exists, load the admin key back into memory without printing it:
+
+```bash
+export MEM0_API_KEY="$(kubectl get secret mem0-secrets -n mem0 -o jsonpath='{.data.ADMIN_API_KEY}' | base64 --decode)"
 ```
 
 The API service is available to in-cluster clients at:
@@ -66,7 +88,13 @@ curl -fsS -X POST http://localhost:8888/search \
   -d '{"query":"What does the SOC workflow use?","user_id":"soc-analyst"}'
 ```
 
-For new installations, prefer a per-user API key created from the Mem0 dashboard or the authenticated `/api-keys` endpoint. `ADMIN_API_KEY` is retained as a practical bootstrap/automation path; keep it long and private.
+### Getting the local Mem0 API key
+
+This chart does not mint a key automatically. The simplest local/demo path is to generate `ADMIN_API_KEY` yourself before installation, as shown above. Mem0 then accepts that same value in the `X-API-Key` header; it is an administrator-level key, so keep it private.
+
+For a more narrowly scoped key, bootstrap an admin through the dashboard/authentication flow and create a per-user key from the dashboard or the authenticated `POST /api-keys` endpoint. Mem0 returns the full `m0sk_...` value once; store it securely because it cannot be recovered later. Prefer this per-user key for n8n when the dashboard is available.
+
+Do not use `AUTH_DISABLED=true` to avoid key setup outside throwaway local testing.
 
 ## n8n integration shape
 
