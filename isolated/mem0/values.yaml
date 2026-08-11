@@ -1,0 +1,71 @@
+nameOverride: ""
+fullnameOverride: ""
+
+api:
+  replicaCount: 1
+  image:
+    repository: mem0/mem0-api-server
+    tag: latest
+    pullPolicy: IfNotPresent
+  port: 8000
+  service:
+    type: ClusterIP
+    port: 8000
+  dashboardUrl: http://localhost:3000
+  authDisabled: false
+  telemetry: false
+  defaultLlmModel: gpt-5-mini
+  defaultEmbedderModel: text-embedding-3-small
+  resources: {}
+  podAnnotations: {}
+
+postgres:
+  enabled: true
+  image:
+    repository: pgvector/pgvector
+    tag: pg17
+    pullPolicy: IfNotPresent
+  service:
+    port: 5432
+  database: postgres
+  username: postgres
+  persistence:
+    # Demo default: data disappears when the StatefulSet is recreated.
+    enabled: false
+    storageClass: ""
+    size: 1Gi
+  resources: {}
+
+# Keep credentials outside the chart by default. The referenced Secret must contain:
+# OPENAI_API_KEY, JWT_SECRET, POSTGRES_PASSWORD, and optionally ADMIN_API_KEY.
+secrets:
+  existingSecret: ""
+  create: false
+  openaiApiKey: ""
+  jwtSecret: ""
+  postgresPassword: ""
+  adminApiKey: ""
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: mem0.example.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+# The official Mem0 repository builds the dashboard from source and does not publish
+# a clearly supported dashboard image. Enable this only after setting an image built
+# from server/dashboard in your own registry.
+dashboard:
+  enabled: false
+  image:
+    repository: ""
+    tag: latest
+    pullPolicy: IfNotPresent
+  port: 3000
+  nextPublicApiUrl: http://localhost:8888
+  resources: {}

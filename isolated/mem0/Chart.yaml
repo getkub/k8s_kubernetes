@@ -1,0 +1,11 @@
+apiVersion: v2
+name: mem0
+description: Self-hosted Mem0 OSS REST API with PostgreSQL and pgvector
+type: application
+version: 0.1.0
+appVersion: "latest"
+home: https://mem0.ai
+sources:
+  - https://github.com/mem0ai/mem0
+maintainers:
+  - name: local
